@@ -7,7 +7,10 @@ class Player {
         this.height = 15;
         this.width = 10;
         this.positionX = 50 - this.width / 2; // Centered starting position
-        this.positionY = 0;
+        this.positionY = 0; // Starting position at the bottom
+        this.speedY = 0; // Initial vertical speed (for jump/fall)
+        this.gravity = -0.5; // Simulating gravity
+        this.jumpPower = 8; // Initial jump speed
         this.playerElement = null;
 
         this.createPlayer();
@@ -27,22 +30,36 @@ class Player {
         board.appendChild(this.playerElement); // Append to board
     }
 
-    jumping() {
-        console.log("jumping");
-        this.positionY++;
+    jump() {
+        this.speedY = this.jumpPower; // Set the initial speed for the jump
+
+        // Start the animation loop
+        this.animate();
+    }
+
+    animate() {
+        this.speedY += this.gravity; // Apply gravity to speed
+        this.positionY += this.speedY; // Update the player's position
+
+        // Update the player's position in the DOM
         this.playerElement.style.bottom = this.positionY + "vh";
+
+        // Stop when player is not visible anymore
+        if (this.positionY > -this.height) { 
+            setTimeout(() => this.animate(), 20);
+        }
     }
 }
-const newPlayer = new Player();
-newPlayer.createPlayer;
 
+const newPlayer = new Player();
 
 // ADDING EVENT LISTENERS: Let player jump when user clicks on the spacebar
 document.addEventListener("keydown", (event) => {
     if (event.code === "Space") {
-        newPlayer.jumping()
+        newPlayer.jump();
     }
 });
+
 
 /***************************************************/
 /******************* PLATFORM **********************/
