@@ -8,4 +8,10 @@ body {
     width: 100vw; 
     height: 100vh;
     position: relative;
+    overflow: hidden;
+}
+
+#player {
+    background-color: #6F73C6;
+    position: absolute;
 }
