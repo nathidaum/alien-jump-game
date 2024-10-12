@@ -8,12 +8,12 @@ class Player {
         this.width = 10;
         this.positionX = 50 - this.width / 2; // Centered starting position
         this.positionY = 0; // Starting position at the bottom
-        this.speedY = 0; // Initial vertical speed (for jump/fall)
+        this.speedY = 8; // Initial jump speed
         this.gravity = -0.5; // Simulating gravity
-        this.jumpPower = 8; // Initial jump speed
         this.playerElement = null;
 
         this.createPlayer();
+        this.jump(); // Correctly call jump() in the constructor
     }
 
     createPlayer() {
@@ -31,32 +31,50 @@ class Player {
     }
 
     jump() {
-        this.speedY = this.jumpPower; // Set the initial speed for the jump
-
-        // Start the animation loop
-        this.animate();
-    }
-
-    animate() {
         this.speedY += this.gravity; // Apply gravity to speed
         this.positionY += this.speedY; // Update the player's position
 
         // Update the player's position in the DOM
         this.playerElement.style.bottom = this.positionY + "vh";
 
-        // Stop when player is not visible anymore
-        if (this.positionY > -this.height) { 
-            setTimeout(() => this.animate(), 20);
+        // Behavior before the game starts: Player bounces back when hitting the bottom
+        if (this.positionY <= 0) {
+            this.positionY = 0; // Reset to ground level
+            this.speedY = 8; // Reset jump speed
+            setTimeout(() => this.jump(), 200); // Slight delay before jumping again
+        } else {
+            // Continue jumping while the player is above ground
+            setTimeout(() => this.jump(), 10); // Recursive call to keep animating the jump
+        }
+    }
+
+    moveRight() {
+        if(this.positionX < 100 - this.width) {
+            this.positionX +=5; 
+            this.playerElement.style.left = this.positionX + "vw";
+            console.log("moving right");
+        }
+    }
+    
+    moveLeft() {
+        if(this.positionX > this.width) {
+            this.positionX -= 5; 
+            this.playerElement.style.left = this.positionX + "vw";
+            console.log("moving left");
         }
     }
 }
 
 const newPlayer = new Player();
 
-// ADDING EVENT LISTENERS: Let player jump when user clicks on the spacebar
+// ADDING EVENT LISTENERS: Let player move/jump left and right
+
 document.addEventListener("keydown", (event) => {
-    if (event.code === "Space") {
-        newPlayer.jump();
+    if (event.code === "ArrowRight") {
+        newPlayer.moveRight();
+    }
+    else if (event.code === "ArrowLeft") {
+        newPlayer.moveLeft();
     }
 });
 
@@ -75,6 +93,7 @@ class Platform {
 
         this.createPlatformElement();
     }
+    
     createPlatformElement() {
         this.platformElement = document.createElement("div");
 
