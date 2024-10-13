@@ -49,16 +49,16 @@ class Player {
     }
 
     moveRight() {
-        if(this.positionX < 100 - this.width) {
-            this.positionX +=5; 
+        if (this.positionX < 100 - this.width) {
+            this.positionX += 5;
             this.playerElement.style.left = this.positionX + "vw";
             console.log("moving right");
         }
     }
-    
+
     moveLeft() {
-        if(this.positionX > 0) {
-            this.positionX -= 5; 
+        if (this.positionX > 0) {
+            this.positionX -= 5;
             this.playerElement.style.left = this.positionX + "vw";
             console.log("moving left");
         }
@@ -71,37 +71,37 @@ const newPlayer = new Player();
 
 document.addEventListener("keydown", (event) => {
     if (event.code === "ArrowRight") {
-        
-         // move right on keydown
-         moveInterval = setInterval(() => {
+
+        // move right on keydown
+        moveInterval = setInterval(() => {
             newPlayer.moveRight();
-        }, 30); 
+        }, 30);
     }
 });
 
 document.addEventListener("keydown", (event) => {
     if (event.code === "ArrowLeft") {
-        
-         // move left on keydown
-         moveInterval = setInterval(() => {
+
+        // move left on keydown
+        moveInterval = setInterval(() => {
             newPlayer.moveLeft();
-        }, 30); 
+        }, 30);
     }
 });
 
 document.addEventListener("keyup", (event) => {
     if (event.code === "ArrowRight") {
-        
-         // stop moving right when releasing the key
-         clearInterval(moveInterval)
+
+        // stop moving right when releasing the key
+        clearInterval(moveInterval)
     }
 });
 
 document.addEventListener("keyup", (event) => {
     if (event.code === "ArrowLeft") {
-        
+
         // stop moving left when releasing the key
-         clearInterval(moveInterval)
+        clearInterval(moveInterval)
     }
 });
 
@@ -110,20 +110,20 @@ document.addEventListener("keyup", (event) => {
 /***************************************************/
 
 class Platform {
-    constructor() {
+    constructor(positionY) {
         this.height = 3;
         this.width = 15;
-        this.positionX = 0;
-        this.positionY = 100 - this.height;
+        this.positionX = Math.floor(Math.random() * (100 - this.width + 1));
+        this.positionY = positionY;
         this.platformElement = null;
 
         this.createPlatformElement();
     }
-    
+
     createPlatformElement() {
         this.platformElement = document.createElement("div");
 
-        this.platformElement.className = "platform"; // add class
+        this.platformElement.className = "platform"; // add class because there are several
 
         this.platformElement.style.height = this.height + "vh";
         this.platformElement.style.width = this.width + "vw";
@@ -135,5 +135,17 @@ class Platform {
     }
 }
 
-const platform1 = new Platform();
-platform1.createPlatformElement();
+// create new platforms and add them to the array 
+const platformsArr = []; // to store instances of the class object
+
+
+function createPlatforms(count) {
+    for (let i = 0; i < count; i++) {
+        let positionY = 10 + i * (100 / count); // platforms should be equally distributed, but now below 10vh
+        const newPlatform = new Platform(positionY); // passing the vertical position as an argument
+        platformsArr.push(newPlatform); // pushing the platform instance to the platformsArr
+    }
+}
+
+let platformCount = 5; // define how many platforms should be shown
+createPlatforms(platformCount);
