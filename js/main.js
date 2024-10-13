@@ -8,7 +8,7 @@ class Player {
         this.width = 10;
         this.positionX = 50 - this.width / 2; // Centered starting position
         this.positionY = 0; // Starting position at the bottom
-        this.speedY = 8; // Initial jump speed
+        this.speedY = 7; // Initial jump speed
         this.gravity = -0.5; // Simulating gravity
         this.playerElement = null;
 
@@ -44,7 +44,7 @@ class Player {
             setTimeout(() => this.jump(), 200); // Slight delay before jumping again
         } else {
             // Continue jumping while the player is above ground
-            setTimeout(() => this.jump(), 10); // Recursive call to keep animating the jump
+            setTimeout(() => this.jump(), 20);
         }
     }
 
@@ -57,7 +57,7 @@ class Player {
     }
     
     moveLeft() {
-        if(this.positionX > this.width) {
+        if(this.positionX > 0) {
             this.positionX -= 5; 
             this.playerElement.style.left = this.positionX + "vw";
             console.log("moving left");
@@ -71,13 +71,39 @@ const newPlayer = new Player();
 
 document.addEventListener("keydown", (event) => {
     if (event.code === "ArrowRight") {
-        newPlayer.moveRight();
-    }
-    else if (event.code === "ArrowLeft") {
-        newPlayer.moveLeft();
+        
+         // move right on keydown
+         moveInterval = setInterval(() => {
+            newPlayer.moveRight();
+        }, 30); 
     }
 });
 
+document.addEventListener("keydown", (event) => {
+    if (event.code === "ArrowLeft") {
+        
+         // move left on keydown
+         moveInterval = setInterval(() => {
+            newPlayer.moveLeft();
+        }, 30); 
+    }
+});
+
+document.addEventListener("keyup", (event) => {
+    if (event.code === "ArrowRight") {
+        
+         // stop moving right when releasing the key
+         clearInterval(moveInterval)
+    }
+});
+
+document.addEventListener("keyup", (event) => {
+    if (event.code === "ArrowLeft") {
+        
+        // stop moving left when releasing the key
+         clearInterval(moveInterval)
+    }
+});
 
 /***************************************************/
 /******************* PLATFORM **********************/
