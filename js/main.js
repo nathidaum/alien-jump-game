@@ -50,17 +50,15 @@ class Player {
 
     moveRight() {
         if (this.positionX < 100 - this.width) {
-            this.positionX += 5;
+            this.positionX += 2;
             this.playerElement.style.left = this.positionX + "vw";
-            console.log("moving right");
         }
     }
 
     moveLeft() {
         if (this.positionX > 0) {
-            this.positionX -= 5;
+            this.positionX -= 2;
             this.playerElement.style.left = this.positionX + "vw";
-            console.log("moving left");
         }
     }
 }
@@ -75,7 +73,7 @@ document.addEventListener("keydown", (event) => {
         // move right on keydown
         moveInterval = setInterval(() => {
             newPlayer.moveRight();
-        }, 30);
+        }, 10);
     }
 });
 
@@ -85,7 +83,7 @@ document.addEventListener("keydown", (event) => {
         // move left on keydown
         moveInterval = setInterval(() => {
             newPlayer.moveLeft();
-        }, 30);
+        }, 10);
     }
 });
 
@@ -118,6 +116,7 @@ class Platform {
         this.platformElement = null;
 
         this.createPlatformElement();
+        this.movePlatformDown();
     }
 
     createPlatformElement() {
@@ -133,7 +132,19 @@ class Platform {
         const board = document.getElementById("board");
         board.appendChild(this.platformElement); // append to board
     }
+
+    movePlatformDown() {
+        let fallInterval = setInterval(() => {
+            this.positionY -= 0.1;
+            this.platformElement.style.bottom = this.positionY + "vh";
+        }, 10);
+
+        if (this.positionY <= -this.height) {
+            clearInterval(fallInterval);
+        }
+    }
 }
+
 
 // create new platforms and add them to the array 
 const platformsArr = []; // to store instances of the class object
@@ -141,11 +152,12 @@ const platformsArr = []; // to store instances of the class object
 
 function createPlatforms(count) {
     for (let i = 0; i < count; i++) {
-        let positionY = 10 + i * (100 / count); // platforms should be equally distributed, but now below 10vh
+        this.positionY = 10 + i * (100 / count); // platforms should be equally distributed, but now below 10vh
         const newPlatform = new Platform(positionY); // passing the vertical position as an argument
         platformsArr.push(newPlatform); // pushing the platform instance to the platformsArr
     }
 }
+
 
 let platformCount = 5; // define how many platforms should be shown
 createPlatforms(platformCount);
