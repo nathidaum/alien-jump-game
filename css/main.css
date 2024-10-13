@@ -19,4 +19,5 @@ body {
 .platform {
     background-color: #ffffff;
     position: absolute;
+    z-index: -1;
 }
