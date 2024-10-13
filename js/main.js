@@ -137,18 +137,20 @@ class Platform {
         let fallInterval = setInterval(() => {
             this.positionY -= 0.1;
             this.platformElement.style.bottom = this.positionY + "vh";
-        }, 10);
 
-        if (this.positionY <= -this.height) {
-            clearInterval(fallInterval);
-        }
+            // Check if platform has moved out of view
+            if (this.positionY <= -this.height) {
+                // Reposition the platform to the top with a random X position
+                this.positionY = 100; // Move it back to the top
+                this.positionX = Math.floor(Math.random() * (100 - this.width + 1));
+                this.platformElement.style.left = this.positionX + "vw";
+            }
+        }, 10);
     }
 }
 
-
 // create new platforms and add them to the array 
 const platformsArr = []; // to store instances of the class object
-
 
 function createPlatforms(count) {
     for (let i = 0; i < count; i++) {
@@ -157,7 +159,6 @@ function createPlatforms(count) {
         platformsArr.push(newPlatform); // pushing the platform instance to the platformsArr
     }
 }
-
 
 let platformCount = 5; // define how many platforms should be shown
 createPlatforms(platformCount);
