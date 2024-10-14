@@ -1,3 +1,5 @@
+let score = 0; 
+
 /***************************************************/
 /******************* PLATFORM **********************/
 /***************************************************/
@@ -39,8 +41,9 @@ class Platform {
                 this.positionY = 100; // Move it back to the top
                 this.positionX = Math.floor(Math.random() * (100 - this.width + 1));
                 this.platformElement.style.left = this.positionX + "vw";
-            }
-        }, 10);
+
+                score++; // increase score by one every time one platform is passed (reaches the bottom)
+        }}, 10);
     }
 }
 
