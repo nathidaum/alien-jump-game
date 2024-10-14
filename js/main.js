@@ -18,9 +18,7 @@ class Platform {
 
     createPlatformElement() {
         this.platformElement = document.createElement("div");
-
-        this.platformElement.className = "platform"; // add class because there are several
-
+        this.platformElement.className = "platform"; // add class
         this.platformElement.style.height = this.height + "vh";
         this.platformElement.style.width = this.width + "vw";
         this.platformElement.style.left = this.positionX + "vw";
@@ -38,30 +36,27 @@ class Platform {
             // Check if platform has moved out of view
             if (this.positionY <= -this.height) {
                 // Reposition the platform to the top with a random X position
-                this.positionY = 100; // Move it back to the top
+                this.positionY = 100;
                 this.positionX = Math.floor(Math.random() * (100 - this.width + 1));
                 this.platformElement.style.left = this.positionX + "vw";
-
-                score++; // increase score by one every time one platform is passed (reaches the bottom)
+                score++; // increase score
             }
         }, 10);
     }
 }
 
-// Create new platforms and add them to the array 
-const platformsArr = []; // to store instances of the class object
-
+// Create platforms
+const platformsArr = [];
 function createPlatforms(count) {
     for (let i = 0; i < count; i++) {
-        let positionY = 10 + i * (100 / count); // platforms should be equally distributed, but now below 10vh
-        const newPlatform = new Platform(positionY); // passing the vertical position as an argument
-        platformsArr.push(newPlatform); // pushing the platform instance to the platformsArr
+        let positionY = 10 + i * (100 / count); // distribute platforms
+        const newPlatform = new Platform(positionY);
+        platformsArr.push(newPlatform);
     }
 }
 
-let platformCount = 5; // define how many platforms should be shown
+let platformCount = 5;
 createPlatforms(platformCount);
-
 
 /***************************************************/
 /******************** PLAYER ***********************/
@@ -73,80 +68,87 @@ class Player {
         this.width = 10;
         this.positionX = 50 - this.width / 2; // Centered starting position
         this.startPoint = 10;
-        this.jumpHeight = 35;
-        this.positionY = this.startPoint; // Starting position at the bottom
+        this.jumpHeight = 40;
+        this.positionY = this.startPoint; // Starting position
         this.jumpSpeed = 0.6;
         this.fallSpeed = 0.3;
+        this.jumping = false;
+        this.falling = false;
 
         this.createPlayer();
-        this.jump();
+        this.jump(); // Start with a jump
     }
 
     createPlayer() {
         this.playerElement = document.createElement("div");
-        // style player
-        this.playerElement.id = "player";
+        this.playerElement.id = "player"; // Add ID
         this.playerElement.style.height = this.height + "vh";
         this.playerElement.style.width = this.width + "vw";
         this.playerElement.style.left = this.positionX + "vw";
         this.playerElement.style.bottom = this.positionY + "vh";
-        // append to the board
+
         const board = document.getElementById("board");
-        board.appendChild(this.playerElement);
+        board.appendChild(this.playerElement); // append to board
     }
 
     jump() {
         clearInterval(this.fallId); // Stop falling
         this.jumping = true;
         this.falling = false;
+        this.jumpSpeed = 0.6; // reset
 
         this.jumpId = setInterval(() => {
-            this.positionY += this.jumpSpeed;
+            this.jumpSpeed -= 0.01; // decrease speed upwards
+            this.positionY += this.jumpSpeed; // move up
             this.playerElement.style.bottom = this.positionY + "vh";
 
-            if (this.positionY >= this.startPoint + this.jumpHeight) {
-                this.fall();
+            if (this.positionY >= this.startPoint + this.jumpHeight || this.jumpSpeed <= 0) {
+                this.fall(); // Start falling when peak is reached
             }
-        }, 30);
+        }, 20);
     }
 
     fall() {
         clearInterval(this.jumpId); // Stop jumping
         this.falling = true;
         this.jumping = false;
+        this.fallSpeed = 0.3; // reset
 
         this.fallId = setInterval(() => {
+            this.fallSpeed += 0.01; // accelerate down
             this.positionY -= this.fallSpeed;
             this.playerElement.style.bottom = this.positionY + "vh";
 
-            // jump when there's a collision
-            platformsArr.forEach((platformInstance) => {
-                if (
-                    this.positionX < platformInstance.positionX + platformInstance.width && // Player's left side is left of platform's right side
-                    this.positionX + this.width > platformInstance.positionX && // Player's right side is right of platform's left side
-                    this.positionY >= platformInstance.positionY && // Player is at or slightly above the platform
-                    this.positionY <= platformInstance.positionY + platformInstance.height && // Player is within the platform's height range
-                    this.jumping === false
-                ) {
-                    this.startPoint = this.positionY;
-                    this.jump();
-                }
+            if (this.positionY < -this.height) {
+                clearInterval(this.fallId);
+                console.log("game over"); // game over logic
+            }
 
-                // stop falling when hitting the ground
-                if (this.positionY < -this.height) {
-                    clearInterval(this.fallId);
-                    console.log("game over"); // will have to add a game over screen & restart option here
-                }
-            }, 30);
-        })
-    };
+            this.checkCollision(); // Continuously check for collisions
+
+        }, 20);
+    }
+
+    checkCollision() {
+        platformsArr.forEach((platformInstance) => {
+            if (
+                this.positionX < platformInstance.positionX + platformInstance.width && // Player's left side is left of platform's right side
+                this.positionX + this.width > platformInstance.positionX && // Player's right side is right of platform's left side
+                this.positionY >= platformInstance.positionY && // Player is at or slightly above the platform
+                this.positionY <= platformInstance.positionY + platformInstance.height // Player is within the platform's height range
+            ) {
+                this.startPoint = this.positionY; // Set the new start point
+                this.jump(); // Trigger jump again
+            }
+        });
+    }
 
     moveRight() {
         if (this.positionX < 100 - this.width) {
             this.positionX += 1;
             this.playerElement.style.left = this.positionX + "vw";
         }
-    };
+    }
 
     moveLeft() {
         if (this.positionX > 0) {
@@ -158,19 +160,16 @@ class Player {
 
 const newPlayer = new Player();
 
-// ADDING EVENT LISTENERS: Let player move/jump left and right
-
+// Adding event listeners for left and right movement
 let moveRightInterval;
 let moveLeftInterval;
 
 document.addEventListener("keydown", (event) => {
     if (event.code === "ArrowRight" && !moveRightInterval) {
-        // move right on keydown
         moveRightInterval = setInterval(() => {
             newPlayer.moveRight();
         }, 10);
     } else if (event.code === "ArrowLeft" && !moveLeftInterval) {
-        // move left on keydown
         moveLeftInterval = setInterval(() => {
             newPlayer.moveLeft();
         }, 10);
@@ -179,11 +178,9 @@ document.addEventListener("keydown", (event) => {
 
 document.addEventListener("keyup", (event) => {
     if (event.code === "ArrowRight") {
-        // stop moving right when releasing the key
         clearInterval(moveRightInterval);
         moveRightInterval = null;
     } else if (event.code === "ArrowLeft") {
-        // stop moving left when releasing the key
         clearInterval(moveLeftInterval);
         moveLeftInterval = null;
     }
