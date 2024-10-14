@@ -67,7 +67,7 @@ class Player {
         this.height = 15;
         this.width = 10;
         this.positionX = 50 - this.width / 2; // Centered starting position
-        this.startPoint = 10;
+        this.startPoint = 100; // let player fall from the top in the beginning
         this.jumpHeight = 40;
         this.positionY = this.startPoint; // Starting position
         this.jumpSpeed = 0.6;

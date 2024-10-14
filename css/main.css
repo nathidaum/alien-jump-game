@@ -1,7 +1,7 @@
 body {
     margin: 0;
     padding: 0;
-    background-color: #67c4eb;
+    background-color: #DCEEFE;
 }
 
 #board {
@@ -12,12 +12,16 @@ body {
 }
 
 #player {
-    background-color: #6F73C6;
+    background-image: url(/images/player.png);
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
     position: absolute;
 }
 
 .platform {
-    background-color: #ffffff;
+    background-image: url(/images/platform.png);
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
     position: absolute;
     z-index: -1;
 }
