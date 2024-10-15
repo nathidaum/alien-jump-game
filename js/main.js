@@ -1,36 +1,16 @@
-let score = 0;
-
-/***************************************************/
-/******************** GAME *************************/
-/***************************************************/
-
-class Game {
-    constructor() {
-        this.isGameOver = false;
-    }
-
-    gameOver() {
-        this.isGameOver = true; // Set game over state
-        clearInterval(newPlayer.fallId); // Stop player fall
-        // Stop platform movement
-        console.log("Game over! Score: " + score);
-        // restart logic
-    }
-}
-
-const newGame = new Game(); 
-
 /***************************************************/
 /******************* PLATFORM **********************/
 /***************************************************/
 
 class Platform {
-    constructor(positionY) {
+    constructor(positionY, gameInstance) {
         this.height = 3;
         this.width = 15;
         this.positionX = Math.floor(Math.random() * (100 - this.width + 1));
         this.positionY = positionY;
         this.platformElement = null;
+        this.fallInterval = null;
+        this.game = gameInstance;
 
         this.createPlatformElement();
         this.movePlatformDown();
@@ -44,12 +24,12 @@ class Platform {
         this.platformElement.style.left = this.positionX + "vw";
         this.platformElement.style.bottom = this.positionY + "vh";
 
-        const board = document.getElementById("board");
-        board.appendChild(this.platformElement); // append to board
+        const board = document.getElementById("board"); // append to board
+        board.appendChild(this.platformElement);
     }
 
     movePlatformDown() {
-        let fallInterval = setInterval(() => {
+        this.fallInterval = setInterval(() => {
             this.positionY -= 0.1;
             this.platformElement.style.bottom = this.positionY + "vh";
 
@@ -59,33 +39,20 @@ class Platform {
                 this.positionY = 100;
                 this.positionX = Math.floor(Math.random() * (100 - this.width + 1));
                 this.platformElement.style.left = this.positionX + "vw";
-                score++; // increase score
-            } else if (newGame.isGameOver) {
-                clearInterval(fallInterval)
+                this.game.score++; // Increase score
+            } else if (this.game.isGameOver) {
+                clearInterval(this.fallInterval);
             }
         }, 10);
     }
 }
-
-// Create platforms
-const platformsArr = [];
-function createPlatforms(count) {
-    for (let i = 0; i < count; i++) {
-        let positionY = 10 + i * (100 / count); // distribute platforms
-        const newPlatform = new Platform(positionY);
-        platformsArr.push(newPlatform);
-    }
-}
-
-let platformCount = 5;
-createPlatforms(platformCount);
 
 /***************************************************/
 /******************** PLAYER ***********************/
 /***************************************************/
 
 class Player {
-    constructor() {
+    constructor(gameInstance) {
         this.height = 15;
         this.width = 10;
         this.positionX = 50 - this.width / 2; // Centered starting position
@@ -96,6 +63,9 @@ class Player {
         this.fallSpeed = 0.3;
         this.jumping = false;
         this.falling = false;
+        this.jumpId = null;
+        this.fallId = null;
+        this.game = gameInstance;
 
         this.createPlayer();
         this.jump(); // Start with a jump
@@ -127,6 +97,7 @@ class Player {
             if (this.positionY >= this.startPoint + this.jumpHeight || this.jumpSpeed <= 0) {
                 this.fall(); // Start falling when peak is reached
             }
+
         }, 20);
     }
 
@@ -142,7 +113,7 @@ class Player {
             this.playerElement.style.bottom = this.positionY + "vh";
 
             if (this.positionY < -this.height) {
-                newGame.gameOver();
+                this.game.gameOver(); // Game over logic
             }
 
             this.checkCollision(); // Continuously check for collisions
@@ -151,7 +122,7 @@ class Player {
     }
 
     checkCollision() {
-        platformsArr.forEach((platformInstance) => {
+        this.game.platformsArr.forEach((platformInstance) => {
             if (
                 this.positionX < platformInstance.positionX + platformInstance.width && // Player's left side is left of platform's right side
                 this.positionX + this.width > platformInstance.positionX && // Player's right side is right of platform's left side
@@ -179,8 +150,6 @@ class Player {
     }
 }
 
-const newPlayer = new Player();
-
 // Adding event listeners for left and right movement
 let moveRightInterval;
 let moveLeftInterval;
@@ -188,11 +157,11 @@ let moveLeftInterval;
 document.addEventListener("keydown", (event) => {
     if (event.code === "ArrowRight" && !moveRightInterval) {
         moveRightInterval = setInterval(() => {
-            newPlayer.moveRight();
+            newGame.player.moveRight();
         }, 10);
     } else if (event.code === "ArrowLeft" && !moveLeftInterval) {
         moveLeftInterval = setInterval(() => {
-            newPlayer.moveLeft();
+            newGame.player.moveLeft();
         }, 10);
     }
 });
@@ -206,3 +175,47 @@ document.addEventListener("keyup", (event) => {
         moveLeftInterval = null;
     }
 });
+
+/***************************************************/
+/******************** GAME *************************/
+/***************************************************/
+
+class Game {
+    constructor() {
+        this.isGameOver = false;
+        this.score = 0;
+        this.platformsArr = [];
+        this.platformCount = 5;
+        this.player = null;
+    }
+
+    startPlay() {
+        // Create platforms
+        this.createPlatforms(this.platformCount);
+
+        // Create player
+        this.player = new Player(this); // Pass the game instance to the player so that it can access methods and properties from the game class
+    }
+
+    createPlatforms(count) {
+        for (let i = 0; i < count; i++) {
+            let positionY = 10 + i * (100 / count); // Distribute platforms
+            const newPlatform = new Platform(positionY, this); // Pass the game instance to each platform
+            this.platformsArr.push(newPlatform);
+        }
+    }
+
+    gameOver() {
+        this.isGameOver = true; // Set game over state
+        clearInterval(this.player.fallId); // Stop player fall
+        console.log("Game over! Score: " + this.score);
+
+        // Stop platform movement
+        this.platformsArr.forEach(platform => {
+            clearInterval(platform.fallInterval);
+        });
+    }
+}
+
+const newGame = new Game();
+newGame.startPlay(); // Start the game
