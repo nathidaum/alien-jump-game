@@ -2,10 +2,15 @@ body {
     margin: 0;
     padding: 0;
     background-color: #DCEEFE;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif
 }
 
 #board {
-    width: 100vw; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
     height: 100vh;
     position: relative;
     overflow: hidden;
@@ -27,8 +32,29 @@ body {
 }
 
 #score {
-    color: black; 
-    padding: 20px 20px;
-    font-size: 40px;
-    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    padding: 5vh 5vw;
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 0;
+    font-size: 3rem;
+    color: black;
+}
+
+#gameover {
+    color: black;
+    font-size: 3rem;
+    margin-bottom: 3vh;
+    text-align: center;
+}
+
+#restart {
+    padding: 2vh 10vw;
+    background-color: #E2EB67;
+    color: black;
+    border: 2px solid black;
+    border-radius: 100px;
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }

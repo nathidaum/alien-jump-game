@@ -221,9 +221,40 @@ class Game {
         clearInterval(this.player.fallId); // Stop player fall
         console.log("Game over! Score: " + this.score);
 
-        // Stop platform movement
+        // Remove score display
+        const board = document.getElementById("board");
+        board.style.backgroundColor = "#6F73C6";
+        board.removeChild(this.scoreCount);
+
+        // Remove player element
+        if (this.player.playerElement) {
+            board.removeChild(this.player.playerElement);
+        }
+
+        // Stop platform movement and remove all platform elements
         this.platformsArr.forEach(platform => {
             clearInterval(platform.fallInterval);
+            if (platform.platformElement) {
+                board.removeChild(platform.platformElement);
+            }
+        });
+
+        // Show a game over message
+        const gameOverMessage = document.createElement("div");
+        gameOverMessage.id = "gameover";
+        gameOverMessage.innerText = `Game Over! 
+        Your score: ${this.score}`;
+        board.appendChild(gameOverMessage);
+
+        // Restart
+        const restartButton = document.createElement("button");
+        restartButton.id = "restart";
+        restartButton.innerText = "Play again";
+
+        board.appendChild(restartButton);
+        restartButton.addEventListener("click", () => {
+            // Reload the page to restart the game (basic restart logic)
+            window.location.reload();
         });
     }
 }
