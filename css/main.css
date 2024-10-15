@@ -25,3 +25,10 @@ body {
     position: absolute;
     z-index: -1;
 }
+
+#score {
+    color: black; 
+    padding: 20px 20px;
+    font-size: 40px;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}

@@ -40,6 +40,8 @@ class Platform {
                 this.positionX = Math.floor(Math.random() * (100 - this.width + 1));
                 this.platformElement.style.left = this.positionX + "vw";
                 this.game.score++; // Increase score
+                this.game.scoreCount.innerText = this.game.score;
+
             } else if (this.game.isGameOver) {
                 clearInterval(this.fallInterval);
             }
@@ -188,6 +190,7 @@ class Game {
         this.platformsArr = [];
         this.platformCount = 5;
         this.player = null;
+        this.showScore()
     }
 
     startPlay() {
@@ -196,6 +199,13 @@ class Game {
 
         // Create player
         this.player = new Player(this); // Pass the game instance to the player so that it can access methods and properties from the game class
+    }
+
+    showScore() {
+        this.scoreCount = document.createElement("div");
+        this.scoreCount.id = "score";
+        const board = document.getElementById("board");
+        board.appendChild(this.scoreCount); // append to board
     }
 
     createPlatforms(count) {
