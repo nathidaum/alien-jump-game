@@ -214,7 +214,18 @@ class Game {
         this.startButton = document.createElement("button");
         this.startButton.id = "start";
         this.startButton.innerText = "Start play";
+        this.startButton.style.backgroundColor = "#E2EB67";
         this.board.appendChild(this.startButton);
+
+        this.startButton.addEventListener("mouseover", () => {
+            this.startButton.style.backgroundColor = "white";
+            this.startButton.style.fontWeight = 900;
+        });
+        
+        this.startButton.addEventListener("mouseout", () => {
+            this.startButton.style.backgroundColor = "#E2EB67";
+            this.startButton.style.fontWeight = 400;
+        });
 
         this.startButton.addEventListener("click", () => {
             this.board.removeChild(this.welcome);
@@ -273,6 +284,16 @@ class Game {
         this.restartButton.id = "restart";
         this.restartButton.innerText = "Play again";
         this.board.appendChild(this.restartButton);
+
+        this.restartButton.addEventListener("mouseover", () => {
+            this.restartButton.style.backgroundColor = "white";
+            this.restartButton.style.fontWeight = 900;
+        });
+        
+        this.restartButton.addEventListener("mouseout", () => {
+            this.restartButton.style.backgroundColor = "#E2EB67";
+            this.restartButton.style.fontWeight = 400;
+        });
 
         this.restartButton.addEventListener("click", () => {
             this.board.style.backgroundColor = "#DCEEFE";
