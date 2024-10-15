@@ -1,6 +1,26 @@
 let score = 0;
 
 /***************************************************/
+/******************** GAME *************************/
+/***************************************************/
+
+class Game {
+    constructor() {
+        this.isGameOver = false;
+    }
+
+    gameOver() {
+        this.isGameOver = true; // Set game over state
+        clearInterval(newPlayer.fallId); // Stop player fall
+        // Stop platform movement
+        console.log("Game over! Score: " + score);
+        // restart logic
+    }
+}
+
+const newGame = new Game(); 
+
+/***************************************************/
 /******************* PLATFORM **********************/
 /***************************************************/
 
@@ -40,6 +60,8 @@ class Platform {
                 this.positionX = Math.floor(Math.random() * (100 - this.width + 1));
                 this.platformElement.style.left = this.positionX + "vw";
                 score++; // increase score
+            } else if (newGame.isGameOver) {
+                clearInterval(fallInterval)
             }
         }, 10);
     }
@@ -120,8 +142,7 @@ class Player {
             this.playerElement.style.bottom = this.positionY + "vh";
 
             if (this.positionY < -this.height) {
-                clearInterval(this.fallId);
-                console.log("game over"); // game over logic
+                newGame.gameOver();
             }
 
             this.checkCollision(); // Continuously check for collisions
