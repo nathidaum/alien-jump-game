@@ -72,8 +72,8 @@ class Player {
         this.game = gameInstance;
 
         this.createPlayer();
-        this.jump();                                                 // Start with a jump
-        this.setupMovement();                                        // Set up left and right movement event listeners
+        this.jump();
+        this.setupMovement(); 
     }
 
     createPlayer() {
@@ -119,7 +119,7 @@ class Player {
             this.playerElement.style.bottom = this.positionY + "vh";
 
             this.checkCollision();                                   // Continuously check for collisions
-
+            
             if (this.positionY < -this.height) {
                 this.game.gameOver();                                // Game over once the player falls below the board
             }
@@ -223,6 +223,7 @@ class Game {
     startPlay() {
         this.isGameOver = false;
         this.score = 0;
+        this.platformsArr = [];
 
         this.showScore()                                             // Show score 
         this.createPlatforms(this.platformCount);                    // Create platforms
@@ -264,7 +265,7 @@ class Game {
         Your score: ${this.score}`;
         this.board.appendChild(this.gameOverMessage);
 
-        // Restart button
+        // Restart
         this.restartButton = document.createElement("button");
         this.restartButton.id = "restart";
         this.restartButton.innerText = "Play again";
@@ -274,7 +275,7 @@ class Game {
             this.board.style.backgroundColor = "#DCEEFE";
             this.board.removeChild(this.gameOverMessage);
             this.board.removeChild(this.restartButton);
-
+            
             this.startPlay();                                        // Start new game
         });
     }
