@@ -65,10 +65,13 @@ class Player {
         this.falling = false;
         this.jumpId = null;
         this.fallId = null;
+        this.moveLeftInterval = null;
+        this.moveRightInterval = null;
         this.game = gameInstance;
 
         this.createPlayer();
         this.jump(); // Start with a jump
+        this.setupMovement(); // Set up left and right movement event listeners
     }
 
     createPlayer() {
@@ -148,33 +151,31 @@ class Player {
             this.playerElement.style.left = this.positionX + "vw";
         }
     }
-}
 
-// Adding event listeners for left and right movement
-let moveRightInterval;
-let moveLeftInterval;
+    setupMovement() {
+        document.addEventListener("keydown", (event) => {
+            if (event.code === "ArrowRight" && !this.moveRightInterval) {
+                this.moveRightInterval = setInterval(() => {
+                    this.moveRight();
+                }, 10);
+            } else if (event.code === "ArrowLeft" && !this.moveLeftInterval) {
+                this.moveLeftInterval = setInterval(() => {
+                    this.moveLeft();
+                }, 10);
+            }
+        });
 
-document.addEventListener("keydown", (event) => {
-    if (event.code === "ArrowRight" && !moveRightInterval) {
-        moveRightInterval = setInterval(() => {
-            newGame.player.moveRight();
-        }, 10);
-    } else if (event.code === "ArrowLeft" && !moveLeftInterval) {
-        moveLeftInterval = setInterval(() => {
-            newGame.player.moveLeft();
-        }, 10);
+        document.addEventListener("keyup", (event) => {
+            if (event.code === "ArrowRight") {
+                clearInterval(this.moveRightInterval);
+                this.moveRightInterval = null;
+            } else if (event.code === "ArrowLeft") {
+                clearInterval(this.moveLeftInterval);
+                this.moveLeftInterval = null;
+            }
+        });
     }
-});
-
-document.addEventListener("keyup", (event) => {
-    if (event.code === "ArrowRight") {
-        clearInterval(moveRightInterval);
-        moveRightInterval = null;
-    } else if (event.code === "ArrowLeft") {
-        clearInterval(moveLeftInterval);
-        moveLeftInterval = null;
-    }
-});
+};
 
 /***************************************************/
 /******************** GAME *************************/
