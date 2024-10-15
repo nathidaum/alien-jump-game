@@ -101,6 +101,8 @@ class Player {
 
             if (this.positionY >= this.startPoint + this.jumpHeight || this.jumpSpeed <= 0) {
                 this.fall();                                         // Start falling when peak is reached
+            } else if (this.positionY >= 100 - this.height) {
+                this.fall();
             }
 
         }, 20);
@@ -206,6 +208,7 @@ class Game {
         this.welcome.id = "welcome";
         this.welcome.innerText = "Welcome!";
         this.board.appendChild(this.welcome);
+        this.board.style.backgroundColor = "#6F73C6";
 
         // Start button
         this.startButton = document.createElement("button");
@@ -228,6 +231,7 @@ class Game {
         this.showScore()                                             // Show score 
         this.createPlatforms(this.platformCount);                    // Create platforms
         this.player = new Player(this);                              // Create player
+        this.board.style.backgroundColor = "#bad5ed";
     }
 
     showScore() {
