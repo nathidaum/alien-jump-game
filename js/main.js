@@ -127,6 +127,8 @@ class Player {
     }
 
     checkCollision() {
+        let hasCollided = false; // Variable to track if the player is standing on a platform
+    
         this.game.platformsArr.forEach((platformInstance) => {
             if (
                 this.positionX < platformInstance.positionX + platformInstance.width && // Player's left side is left of platform's right side
@@ -134,10 +136,14 @@ class Player {
                 this.positionY >= platformInstance.positionY && // Player is at or slightly above the platform
                 this.positionY <= platformInstance.positionY + platformInstance.height // Player is within the platform's height range
             ) {
+                hasCollided = true; // Player has landed on a platform
                 this.startPoint = this.positionY; // Set the new start point
-                this.jump(); // Trigger jump again
             }
         });
+    
+        if (hasCollided && !this.jumping) {
+            this.jump(); // Only jump if the player is standing on a platform
+        }
     }
 
     moveRight() {
@@ -190,22 +196,55 @@ class Game {
         this.platformsArr = [];
         this.platformCount = 5;
         this.player = null;
-        this.showScore()
+
+        this.board = document.getElementById("board");
+    }
+
+    welcome() {
+        this.isGameOver = false;
+
+        this.welcome = document.createElement("div");
+        this.welcome.id = "welcome";
+        this.welcome.innerText = "Welcome!";
+        this.board.appendChild(this.welcome);
+
+        // Start button
+        this.startButton = document.createElement("button");
+        this.startButton.id = "start";
+        this.startButton.innerText = "Start play";
+
+        this.board.appendChild(this.startButton);
+        console.log('Start button created'); // Debugging statement
+        
+        this.startButton.addEventListener("click", () => {
+            console.log('Start button clicked'); // Debugging statement
+            this.board.removeChild(this.welcome);
+            this.board.removeChild(this.startButton);
+            this.startPlay();
+        })
     }
 
     startPlay() {
+        this.isGameOver = false;
+
+        // Show score 
+        this.showScore()
+
         // Create platforms
         this.createPlatforms(this.platformCount);
 
         // Create player
         this.player = new Player(this); // Pass the game instance to the player so that it can access methods and properties from the game class
+        // Set the player on the first platform
+    const firstPlatform = this.platformsArr[0];
+    this.player.positionY = firstPlatform.positionY + firstPlatform.height; // Place player on top of the first platform
+    this.player.playerElement.style.bottom = this.player.positionY + "vh";
     }
 
     showScore() {
         this.scoreCount = document.createElement("div");
         this.scoreCount.id = "score";
-        const board = document.getElementById("board");
-        board.appendChild(this.scoreCount); // append to board
+        this.board.appendChild(this.scoreCount); // append to board
     }
 
     createPlatforms(count) {
@@ -222,42 +261,49 @@ class Game {
         console.log("Game over! Score: " + this.score);
 
         // Remove score display
-        const board = document.getElementById("board");
-        board.style.backgroundColor = "#6F73C6";
-        board.removeChild(this.scoreCount);
+        this.board.style.backgroundColor = "#6F73C6";
+        this.board.removeChild(this.scoreCount);
 
         // Remove player element
         if (this.player.playerElement) {
-            board.removeChild(this.player.playerElement);
+            this.board.removeChild(this.player.playerElement);
         }
 
         // Stop platform movement and remove all platform elements
         this.platformsArr.forEach(platform => {
             clearInterval(platform.fallInterval);
-            if (platform.platformElement) {
-                board.removeChild(platform.platformElement);
-            }
+             this.board.removeChild(platform.platformElement);
         });
 
         // Show a game over message
-        const gameOverMessage = document.createElement("div");
-        gameOverMessage.id = "gameover";
-        gameOverMessage.innerText = `Game Over! 
+        this.gameOverMessage = document.createElement("div");
+        this.gameOverMessage.id = "gameover";
+        this.gameOverMessage.innerText = `Game Over! 
         Your score: ${this.score}`;
-        board.appendChild(gameOverMessage);
+        this.board.appendChild(this.gameOverMessage);
 
         // Restart
-        const restartButton = document.createElement("button");
-        restartButton.id = "restart";
-        restartButton.innerText = "Play again";
-
-        board.appendChild(restartButton);
-        restartButton.addEventListener("click", () => {
+        this.restartButton = document.createElement("button");
+        this.restartButton.id = "restart";
+        this.restartButton.innerText = "Play again";
+        this.board.appendChild(this.restartButton);
+        
+        this.restartButton.addEventListener("click", () => {
             // Reload the page to restart the game (basic restart logic)
-            window.location.reload();
+            this.board.removeChild(this.gameOverMessage);
+            this.board.removeChild(this.restartButton);
+            this.board.style.backgroundColor = "#DCEEFE";
+
+            // reset 
+            this.isGameOver = false;
+            this.score = 0;
+
+            this.startPlay();
         });
     }
 }
 
 const newGame = new Game();
-newGame.startPlay(); // Start the game
+
+newGame.welcome()
+// newGame.startPlay(); // Start the game
