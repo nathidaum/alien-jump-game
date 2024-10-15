@@ -250,7 +250,6 @@ class Game {
 
     gameOver() {
         this.isGameOver = true;
-        this.score = 0;
 
         this.board.style.backgroundColor = "#6F73C6";                // Change board background 
         this.board.removeChild(this.scoreCount);                     // Remove score count
