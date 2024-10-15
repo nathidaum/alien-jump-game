@@ -72,77 +72,78 @@ class Player {
         this.game = gameInstance;
 
         this.createPlayer();
-        this.jump(); // Start with a jump
-        this.setupMovement(); // Set up left and right movement event listeners
+        this.jump();                                                 // Start with a jump
+        this.setupMovement();                                        // Set up left and right movement event listeners
     }
 
     createPlayer() {
         this.playerElement = document.createElement("div");
-        this.playerElement.id = "player"; // Add ID
+        this.playerElement.id = "player";                            // Add ID
         this.playerElement.style.height = this.height + "vh";
         this.playerElement.style.width = this.width + "vw";
         this.playerElement.style.left = this.positionX + "vw";
         this.playerElement.style.bottom = this.positionY + "vh";
 
         const board = document.getElementById("board");
-        board.appendChild(this.playerElement); // append to board
+        board.appendChild(this.playerElement);                       // Append to board
     }
 
     jump() {
-        clearInterval(this.fallId); // Stop falling
+        clearInterval(this.fallId);                                  // Stop falling
         this.jumping = true;
         this.falling = false;
-        this.jumpSpeed = 0.6; // reset
+        this.jumpSpeed = 0.6;                                        // Reset
 
         this.jumpId = setInterval(() => {
-            this.jumpSpeed -= 0.01; // decrease speed upwards
-            this.positionY += this.jumpSpeed; // move up
+            this.jumpSpeed -= 0.01;                                  // Decrease speed upwards
+            this.positionY += this.jumpSpeed;                        // Move up
             this.playerElement.style.bottom = this.positionY + "vh";
 
             if (this.positionY >= this.startPoint + this.jumpHeight || this.jumpSpeed <= 0) {
-                this.fall(); // Start falling when peak is reached
+                this.fall();                                         // Start falling when peak is reached
             }
 
         }, 20);
     }
 
     fall() {
-        clearInterval(this.jumpId); // Stop jumping
+        clearInterval(this.jumpId);                                  // Stop jumping
+
         this.falling = true;
         this.jumping = false;
-        this.fallSpeed = 0.3; // reset
+        this.fallSpeed = 0.3;                                        // Reset
 
         this.fallId = setInterval(() => {
-            this.fallSpeed += 0.01; // accelerate down
+            this.fallSpeed += 0.01;                                  // Accelerate down
             this.positionY -= this.fallSpeed;
             this.playerElement.style.bottom = this.positionY + "vh";
 
-            if (this.positionY < -this.height) {
-                this.game.gameOver(); // Game over logic
-            }
+            this.checkCollision();                                   // Continuously check for collisions
 
-            this.checkCollision(); // Continuously check for collisions
+            if (this.positionY < -this.height) {
+                this.game.gameOver();                                // Game over once the player falls below the board
+            }
 
         }, 20);
     }
 
     checkCollision() {
-        let hasCollided = false; // Variable to track if the player is standing on a platform
-    
+        let hasCollided = false;                                     // Variable to track if the player is standing on a platform
+
         this.game.platformsArr.forEach((platformInstance) => {
             if (
                 this.positionX < platformInstance.positionX + platformInstance.width && // Player's left side is left of platform's right side
-                this.positionX + this.width > platformInstance.positionX && // Player's right side is right of platform's left side
-                this.positionY >= platformInstance.positionY && // Player is at or slightly above the platform
-                this.positionY <= platformInstance.positionY + platformInstance.height // Player is within the platform's height range
+                this.positionX + this.width > platformInstance.positionX &&             // Player's right side is right of platform's left side
+                this.positionY >= platformInstance.positionY &&                         // Player is at or slightly above the platform
+                this.positionY <= platformInstance.positionY + platformInstance.height  // Player is within the platform's height range
             ) {
-                hasCollided = true; // Player has landed on a platform
-                this.startPoint = this.positionY; // Set the new start point
+                hasCollided = true;                                  // Player has landed on a platform
+                this.startPoint = this.positionY;                    // Set the new start point
             }
         });
-    
+
         if (hasCollided && !this.jumping) {
-            this.jump(); // Only jump if the player is standing on a platform
+            this.jump();                                             // Only jump if the player is standing on a platform
         }
     }
 
@@ -196,13 +197,11 @@ class Game {
         this.platformsArr = [];
         this.platformCount = 5;
         this.player = null;
-
         this.board = document.getElementById("board");
     }
 
     welcome() {
         this.isGameOver = false;
-
         this.welcome = document.createElement("div");
         this.welcome.id = "welcome";
         this.welcome.innerText = "Welcome!";
@@ -212,12 +211,9 @@ class Game {
         this.startButton = document.createElement("button");
         this.startButton.id = "start";
         this.startButton.innerText = "Start play";
-
         this.board.appendChild(this.startButton);
-        console.log('Start button created'); // Debugging statement
-        
+
         this.startButton.addEventListener("click", () => {
-            console.log('Start button clicked'); // Debugging statement
             this.board.removeChild(this.welcome);
             this.board.removeChild(this.startButton);
             this.startPlay();
@@ -226,54 +222,40 @@ class Game {
 
     startPlay() {
         this.isGameOver = false;
+        this.score = 0;
 
-        // Show score 
-        this.showScore()
-
-        // Create platforms
-        this.createPlatforms(this.platformCount);
-
-        // Create player
-        this.player = new Player(this); // Pass the game instance to the player so that it can access methods and properties from the game class
-        // Set the player on the first platform
-    const firstPlatform = this.platformsArr[0];
-    this.player.positionY = firstPlatform.positionY + firstPlatform.height; // Place player on top of the first platform
-    this.player.playerElement.style.bottom = this.player.positionY + "vh";
+        this.showScore()                                             // Show score 
+        this.createPlatforms(this.platformCount);                    // Create platforms
+        this.player = new Player(this);                              // Create player
     }
 
     showScore() {
         this.scoreCount = document.createElement("div");
         this.scoreCount.id = "score";
-        this.board.appendChild(this.scoreCount); // append to board
+        this.board.appendChild(this.scoreCount);
     }
 
     createPlatforms(count) {
         for (let i = 0; i < count; i++) {
-            let positionY = 10 + i * (100 / count); // Distribute platforms
-            const newPlatform = new Platform(positionY, this); // Pass the game instance to each platform
+            let positionY = 10 + i * (100 / count);                  // Distribute platforms
+            const newPlatform = new Platform(positionY, this);       // Pass game instance to each platform
             this.platformsArr.push(newPlatform);
         }
     }
 
     gameOver() {
-        this.isGameOver = true; // Set game over state
-        clearInterval(this.player.fallId); // Stop player fall
-        console.log("Game over! Score: " + this.score);
+        this.isGameOver = true;
+        this.score = 0;
 
-        // Remove score display
-        this.board.style.backgroundColor = "#6F73C6";
-        this.board.removeChild(this.scoreCount);
+        this.board.style.backgroundColor = "#6F73C6";                // Change board background 
+        this.board.removeChild(this.scoreCount);                     // Remove score count
+        this.board.removeChild(this.player.playerElement);           // Remove player
 
-        // Remove player element
-        if (this.player.playerElement) {
-            this.board.removeChild(this.player.playerElement);
-        }
-
-        // Stop platform movement and remove all platform elements
+        clearInterval(this.player.fallId);                           // Clear falling interval
         this.platformsArr.forEach(platform => {
             clearInterval(platform.fallInterval);
-             this.board.removeChild(platform.platformElement);
-        });
+            this.board.removeChild(platform.platformElement);
+        });                                                          // Stop platforms from falling
 
         // Show a game over message
         this.gameOverMessage = document.createElement("div");
@@ -282,23 +264,18 @@ class Game {
         Your score: ${this.score}`;
         this.board.appendChild(this.gameOverMessage);
 
-        // Restart
+        // Restart button
         this.restartButton = document.createElement("button");
         this.restartButton.id = "restart";
         this.restartButton.innerText = "Play again";
         this.board.appendChild(this.restartButton);
-        
+
         this.restartButton.addEventListener("click", () => {
-            // Reload the page to restart the game (basic restart logic)
+            this.board.style.backgroundColor = "#DCEEFE";
             this.board.removeChild(this.gameOverMessage);
             this.board.removeChild(this.restartButton);
-            this.board.style.backgroundColor = "#DCEEFE";
 
-            // reset 
-            this.isGameOver = false;
-            this.score = 0;
-
-            this.startPlay();
+            this.startPlay();                                        // Start new game
         });
     }
 }
@@ -306,4 +283,3 @@ class Game {
 const newGame = new Game();
 
 newGame.welcome()
-// newGame.startPlay(); // Start the game
