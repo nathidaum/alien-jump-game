@@ -1,4 +1,35 @@
 /***************************************************/
+/***************** REDIRECTION *********************/
+/***************************************************/
+
+// Handle redirection from the welcome screen to the game screen
+window.onload = function () {
+    const startButton = document.getElementById('start');
+    const restartButton = document.getElementById('restart');
+    const scoreCount = document.getElementById('scoreCount');
+
+    // Start game
+    if (startButton) {
+        startButton.addEventListener('click', () => {
+            window.location.href = 'play.html';
+        });
+    }
+
+    // Restart game
+    if (restartButton) {
+        restartButton.addEventListener('click', () => {
+            window.location.href = 'play.html';
+        });
+    }
+
+    // Display score on gameover screen
+    if (scoreCount) {
+        const score = localStorage.getItem('score') || 0;
+        scoreCount.innerText = score;
+    }
+};
+
+/***************************************************/
 /******************* PLATFORM **********************/
 /***************************************************/
 
@@ -33,11 +64,11 @@ class Platform {
             this.positionY -= 0.1;
             this.platformElement.style.bottom = this.positionY + "vh";
 
-            if (this.positionY <= -this.height) {                    // Check if platform has moved out of view
-                this.positionY = 100;                                // Reposition the platform to the top with a random X position
+            if (this.positionY <= -this.height) {
+                this.positionY = 100;
                 this.positionX = Math.floor(Math.random() * (100 - this.width + 1));
                 this.platformElement.style.left = this.positionX + "vw";
-                this.game.score++;                                   // Increase score
+                this.game.score++;
                 this.game.scoreCount.innerText = this.game.score;
 
             } else if (this.game.isGameOver) {
@@ -66,29 +97,28 @@ class Coin {
     }
 
     createCoinElement() {
-        this.coinElement = document.createElement("div");            // Create coinElement instead of using platformElement
-        this.coinElement.className = "coin";                         // Apply a different class for coin styling
+        this.coinElement = document.createElement("div");
+        this.coinElement.className = "coin";
         this.coinElement.style.height = this.height + "vh";
         this.coinElement.style.width = this.width + "vw";
         this.coinElement.style.left = this.positionX + "vw";
         this.coinElement.style.bottom = this.positionY + "vh";
 
-        const board = document.getElementById("board"); 
+        const board = document.getElementById("board");
         board.appendChild(this.coinElement);
     }
 
     moveCoinDown() {
         this.fallInterval = setInterval(() => {
             this.positionY -= 0.12;
-            this.coinElement.style.bottom = this.positionY + "vh";   // Move coinElement
+            this.coinElement.style.bottom = this.positionY + "vh";
 
-            
-            if (this.positionY <= -this.height || this.checkPlayerCollision()) { // Check if the coin is out of view or collected by the player
+            if (this.positionY <= -this.height || this.checkPlayerCollision()) {
                 if (this.checkPlayerCollision()) {
-                    this.game.score += 5;                            // Add extra points for collecting a coin
+                    this.game.score += 5;
                     this.game.scoreCount.innerText = this.game.score;
                 }
-                this.resetCoinPosition();                            // Reset coin in both cases
+                this.resetCoinPosition();
             }
 
             if (this.game.isGameOver) {
@@ -97,7 +127,7 @@ class Coin {
         }, 10);
     }
 
-    checkPlayerCollision() {                                         // Check for collision between player and coin
+    checkPlayerCollision() {
         return (
             this.game.player.positionX < this.positionX + this.width &&
             this.game.player.positionX + this.game.player.width > this.positionX &&
@@ -107,7 +137,7 @@ class Coin {
     }
 
     resetCoinPosition() {
-        this.positionY = 100;                                        // Reset coin position after a collision or when it goes out of view
+        this.positionY = 100;
         this.positionX = Math.floor(Math.random() * (100 - this.width + 1));
         this.coinElement.style.left = this.positionX + "vw";
     }
@@ -118,40 +148,40 @@ class Coin {
 /***************************************************/
 class Bullet {
     constructor(positionX, positionY, gameInstance) {
-        this.width = 1;                                                       // Bullet dimensions
+        this.width = 1;
         this.height = 1;
         this.positionX = positionX;
         this.positionY = positionY;
         this.bulletElement = null;
         this.game = gameInstance;
+        this.board = document.getElementById("board");
 
         this.createBulletElement();
-        this.moveBulletUp();
     }
 
     createBulletElement() {
         this.bulletElement = document.createElement("div");
-        this.bulletElement.className = "bullet";                              // Add bullet class for styling
+        this.bulletElement.className = "bullet";
         this.bulletElement.style.width = this.width + "vw";
         this.bulletElement.style.height = this.height + "vh";
         this.bulletElement.style.left = this.positionX + "vw";
         this.bulletElement.style.bottom = this.positionY + "vh";
 
-        const board = document.getElementById("board");
-        board.appendChild(this.bulletElement);
+        this.board.appendChild(this.bulletElement);
+        this.moveBulletUp();
     }
 
     moveBulletUp() {
         this.interval = setInterval(() => {
-            this.positionY += 1;                                              // Bullet speed
+            this.positionY += 1;
             this.bulletElement.style.bottom = this.positionY + "vh";
 
             if (this.positionY > 100) {
-                clearInterval(this.interval);                                 // Remove bullet when it leaves the screen
+                clearInterval(this.interval);
                 this.bulletElement.remove();
             }
 
-            if (this.game.isGameOver) {                                       // Remove bullets when there's a gameover
+            if (this.game.isGameOver) {
                 clearInterval(this.interval);
                 this.bulletElement.remove();
             }
@@ -164,7 +194,6 @@ class Bullet {
     }
 }
 
-
 /***************************************************/
 /******************** PLAYER ***********************/
 /***************************************************/
@@ -173,10 +202,10 @@ class Player {
     constructor(gameInstance) {
         this.height = 15;
         this.width = 10;
-        this.positionX = 50 - this.width / 2;                        // Centered starting position
-        this.startPoint = 100;                                       // let player fall from the top in the beginning
+        this.positionX = 50 - this.width / 2;
+        this.startPoint = 100;
         this.jumpHeight = 40;
-        this.positionY = this.startPoint;                            // Starting position
+        this.positionY = this.startPoint;
         this.jumpSpeed = 0.6;
         this.fallSpeed = 0.3;
         this.jumping = false;
@@ -186,6 +215,7 @@ class Player {
         this.moveLeftInterval = null;
         this.moveRightInterval = null;
         this.game = gameInstance;
+        this.shootListener = null;
 
         this.createPlayer();
         this.jump();
@@ -195,74 +225,73 @@ class Player {
 
     createPlayer() {
         this.playerElement = document.createElement("div");
-        this.playerElement.id = "player";                            // Add ID
+        this.playerElement.id = "player";
         this.playerElement.style.height = this.height + "vh";
         this.playerElement.style.width = this.width + "vw";
         this.playerElement.style.left = this.positionX + "vw";
         this.playerElement.style.bottom = this.positionY + "vh";
 
         const board = document.getElementById("board");
-        board.appendChild(this.playerElement);                       // Append to board
+        board.appendChild(this.playerElement);
     }
 
     jump() {
-        clearInterval(this.fallId);                                  // Stop falling
+        clearInterval(this.fallId);
         this.jumping = true;
         this.falling = false;
-        this.jumpSpeed = 0.6;                                        // Reset
+        this.jumpSpeed = 0.6;
 
         this.jumpId = setInterval(() => {
-            this.jumpSpeed -= 0.01;                                  // Decrease speed upwards
-            this.positionY += this.jumpSpeed;                        // Move up
+            this.jumpSpeed -= 0.01;
+            this.positionY += this.jumpSpeed;
             this.playerElement.style.bottom = this.positionY + "vh";
 
             if (this.positionY >= this.startPoint + this.jumpHeight || this.jumpSpeed <= 0) {
-                this.fall();                                         // Start falling when peak is reached
+                this.fall();
             } else if (this.positionY >= 100 - this.height) {
                 this.fall();
             }
-
         }, 20);
     }
 
     fall() {
-        clearInterval(this.jumpId);                                  // Stop jumping
+        clearInterval(this.jumpId);
 
         this.falling = true;
         this.jumping = false;
-        this.fallSpeed = 0.3;                                        // Reset
+        this.fallSpeed = 0.3;
 
         this.fallId = setInterval(() => {
-            this.fallSpeed += 0.01;                                  // Accelerate down
+            this.fallSpeed += 0.01;
             this.positionY -= this.fallSpeed;
             this.playerElement.style.bottom = this.positionY + "vh";
 
-            this.checkCollision();                                   // Continuously check for collisions
+            this.checkCollision();
 
             if (this.positionY < -this.height) {
-                this.game.gameOver();                                // Game over once the player falls below the board
-            }
+                this.game.gameOver();
 
+            }
         }, 20);
     }
 
     checkCollision() {
-        let hasCollided = false;                                     // Variable to track if the player is standing on a platform
+        let hasCollided = false;
 
         this.game.platformsArr.forEach((platformInstance) => {
             if (
-                this.positionX < platformInstance.positionX + platformInstance.width && // Player's left side is left of platform's right side
-                this.positionX + this.width > platformInstance.positionX &&             // Player's right side is right of platform's left side
-                this.positionY >= platformInstance.positionY &&                         // Player is at or slightly above the platform
-                this.positionY <= platformInstance.positionY + platformInstance.height  // Player is within the platform's height range
+                this.positionX < platformInstance.positionX + platformInstance.width &&
+                this.positionX + this.width > platformInstance.positionX &&
+                this.positionY >= platformInstance.positionY &&
+                this.positionY <= platformInstance.positionY + platformInstance.height
             ) {
-                hasCollided = true;                                  // Player has landed on a platform
-                this.startPoint = this.positionY;                    // Set the new start point
+                hasCollided = true;
+                this.startPoint = this.positionY;
             }
         });
 
         if (hasCollided) {
-            this.jump();                                             // Only jump if the player is standing on a platform
+            this.jump();
         }
     }
 
@@ -305,16 +334,36 @@ class Player {
     }
 
     shoot() {
-        document.addEventListener("keydown", (event) => {
+        if (this.shootListener) {
+            document.removeEventListener("keydown", this.shootListener);
+        }
+
+        this.shootListener = (event) => {
             if (event.code === "ArrowUp") {
-                console.log("Shoot");
                 const bullet = new Bullet(this.positionX + this.width / 2, this.positionY + this.height / 2, this.game);
                 this.game.bulletsArr.push(bullet);
             }
-        });
-    }
-};
+        };
 
+        document.addEventListener("keydown", this.shootListener);
+    }
+
+    removePlayer() {
+        clearInterval(this.jumpId);
+        clearInterval(this.fallId);
+        clearInterval(this.moveLeftInterval);
+        clearInterval(this.moveRightInterval);
+
+        if (this.playerElement) {
+            this.playerElement.remove();
+        }
+
+        if (this.shootListener) {
+            document.removeEventListener("keydown", this.shootListener);
+            this.shootListener = null;
+        }
+    }
+}
 
 /***************************************************/
 /******************** GAME *************************/
@@ -332,38 +381,6 @@ class Game {
         this.bulletsArr = [];
     }
 
-    welcome() {
-        this.isGameOver = false;
-        this.welcome = document.createElement("div");
-        this.welcome.id = "welcome";
-        this.welcome.innerText = "Welcome!";
-        this.board.appendChild(this.welcome);
-        this.board.style.backgroundColor = "#6F73C6";
-
-        // Start button
-        this.startButton = document.createElement("button");
-        this.startButton.id = "start";
-        this.startButton.innerText = "Start play";
-        this.startButton.style.backgroundColor = "#E2EB67";
-        this.board.appendChild(this.startButton);
-
-        this.startButton.addEventListener("mouseover", () => {
-            this.startButton.style.backgroundColor = "white";
-            this.startButton.style.fontWeight = 900;
-        });
-
-        this.startButton.addEventListener("mouseout", () => {
-            this.startButton.style.backgroundColor = "#E2EB67";
-            this.startButton.style.fontWeight = 400;
-        });
-
-        this.startButton.addEventListener("click", () => {
-            this.board.removeChild(this.welcome);
-            this.board.removeChild(this.startButton);
-            this.startPlay();
-        })
-    }
-
     startPlay() {
         this.isGameOver = false;
         this.score = 0;
@@ -373,11 +390,10 @@ class Game {
 
         this.board.style.backgroundColor = "#bad5ed";
 
-        this.showScore()                                             // Show score 
-        this.createPlatforms(this.platformCount);                    // Create platforms
-        this.player = new Player(this);                              // Create player
-        this.createCoins(this.coinCount);                            // Create coins
-        this.board.style.backgroundColor = "#bad5ed";
+        this.showScore();
+        this.createPlatforms(this.platformCount);
+        this.player = new Player(this);
+        this.createCoins(this.coinCount);
     }
 
     showScore() {
@@ -388,14 +404,14 @@ class Game {
 
     createPlatforms(count) {
         for (let i = 0; i < count; i++) {
-            let positionY = 10 + i * (100 / count);                  // Distribute platforms
-            const newPlatform = new Platform(positionY, this);       // Pass game instance to each platform
+            let positionY = 10 + i * (100 / count);
+            const newPlatform = new Platform(positionY, this);
             this.platformsArr.push(newPlatform);
         }
     }
 
     createCoins(count) {
-        let positionY = Math.random() * 100;                         // Random vertical position
+        let positionY = Math.random() * 100;
         const newCoin = new Coin(positionY, this);
         this.coinsArr.push(newCoin);
     }
@@ -404,60 +420,17 @@ class Game {
         this.isGameOver = true;
 
         this.bulletsArr.forEach(bullet => {
-            bullet.clearBullet(); 
-        });                                                          // Remove bullets
-        this.bulletsArr = [];                                        // Clear the bullets array
-
-        this.board.style.backgroundColor = "#6F73C6";                // Change board background 
-        this.board.removeChild(this.scoreCount);                     // Remove score count
-        this.board.removeChild(this.player.playerElement);           // Remove player
-
-        clearInterval(this.player.fallId);                           // Clear falling interval
-
-        this.coinsArr.forEach(coin => {
-            clearInterval(coin.fallInterval);                        // Stop coin's falling interval
-            this.board.removeChild(coin.coinElement);                // Remove the actual coin element
+            bullet.clearBullet();
         });
+        this.bulletsArr = [];
 
-        this.platformsArr.forEach(platform => {
-            clearInterval(platform.fallInterval);
-            this.board.removeChild(platform.platformElement);
-        });                                                          // Stop platforms from falling
+        localStorage.setItem('score', this.score);
 
-
-        // Show a game over message
-        this.gameOverMessage = document.createElement("div");
-        this.gameOverMessage.id = "gameover";
-        this.gameOverMessage.innerText = `Game Over! 
-        Your score: ${this.score}`;
-        this.board.appendChild(this.gameOverMessage);
-
-        // Restart
-        this.restartButton = document.createElement("button");
-        this.restartButton.id = "restart";
-        this.restartButton.innerText = "Play again";
-        this.board.appendChild(this.restartButton);
-
-        this.restartButton.addEventListener("mouseover", () => {
-            this.restartButton.style.backgroundColor = "white";
-            this.restartButton.style.fontWeight = 900;
-        });
-
-        this.restartButton.addEventListener("mouseout", () => {
-            this.restartButton.style.backgroundColor = "#E2EB67";
-            this.restartButton.style.fontWeight = 400;
-        });
-
-        this.restartButton.addEventListener("click", () => {
-            this.board.style.backgroundColor = "#DCEEFE";
-            this.board.removeChild(this.gameOverMessage);
-            this.board.removeChild(this.restartButton);
-
-            this.startPlay();                                        // Start new game
-        });
+        window.location.href = 'gameover.html';
     }
 }
 
-const newGame = new Game();
-
-newGame.welcome()
+if (window.location.pathname.includes('play.html')) {
+    const game = new Game();
+    game.startPlay();
+}
