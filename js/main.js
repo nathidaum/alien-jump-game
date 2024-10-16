@@ -143,6 +143,7 @@ class Player {
         this.createPlayer();
         this.jump();
         this.setupMovement();
+        this.shoot();
     }
 
     createPlayer() {
@@ -254,6 +255,14 @@ class Player {
                 this.moveLeftInterval = null;
             }
         });
+    }
+
+    shoot() {
+        document.addEventListener("keydown", (event) => {
+            if(event.code === "ArrowUp") {
+                console.log("Shoot");
+            }
+        })
     }
 };
 
