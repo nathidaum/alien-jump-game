@@ -17,16 +17,16 @@ body {
 }
 
 #player {
-    background-image: url(./images/player.png);
     background-size: 100% 100%;
+    background-image: url(../images/player.png);
     background-repeat: no-repeat;
     position: absolute;
     z-index: +1;
 }
 
 .platform {
-    background-image: url(./images/platform.png);
     background-size: 100% 100%;
+    background-image: url(../images/platform.png);
     background-repeat: no-repeat;
     position: absolute;
 }
