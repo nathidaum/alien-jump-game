@@ -18,13 +18,13 @@ class Platform {
 
     createPlatformElement() {
         this.platformElement = document.createElement("div");
-        this.platformElement.className = "platform"; // add class
+        this.platformElement.className = "platform";
         this.platformElement.style.height = this.height + "vh";
         this.platformElement.style.width = this.width + "vw";
         this.platformElement.style.left = this.positionX + "vw";
         this.platformElement.style.bottom = this.positionY + "vh";
 
-        const board = document.getElementById("board"); // append to board
+        const board = document.getElementById("board");
         board.appendChild(this.platformElement);
     }
 
@@ -33,13 +33,11 @@ class Platform {
             this.positionY -= 0.1;
             this.platformElement.style.bottom = this.positionY + "vh";
 
-            // Check if platform has moved out of view
-            if (this.positionY <= -this.height) {
-                // Reposition the platform to the top with a random X position
-                this.positionY = 100;
+            if (this.positionY <= -this.height) {                    // Check if platform has moved out of view
+                this.positionY = 100;                                // Reposition the platform to the top with a random X position
                 this.positionX = Math.floor(Math.random() * (100 - this.width + 1));
                 this.platformElement.style.left = this.positionX + "vw";
-                this.game.score++; // Increase score
+                this.game.score++;                                   // Increase score
                 this.game.scoreCount.innerText = this.game.score;
 
             } else if (this.game.isGameOver) {
@@ -68,29 +66,29 @@ class Coin {
     }
 
     createCoinElement() {
-        this.coinElement = document.createElement("div");  // Create coinElement instead of using platformElement
-        this.coinElement.className = "coin";  // Apply a different class for coin styling
+        this.coinElement = document.createElement("div");            // Create coinElement instead of using platformElement
+        this.coinElement.className = "coin";                         // Apply a different class for coin styling
         this.coinElement.style.height = this.height + "vh";
         this.coinElement.style.width = this.width + "vw";
         this.coinElement.style.left = this.positionX + "vw";
         this.coinElement.style.bottom = this.positionY + "vh";
 
-        const board = document.getElementById("board");  // Append to board
+        const board = document.getElementById("board"); 
         board.appendChild(this.coinElement);
     }
 
     moveCoinDown() {
         this.fallInterval = setInterval(() => {
-            this.positionY -= 0.1;
-            this.coinElement.style.bottom = this.positionY + "vh"; // Move coinElement
+            this.positionY -= 0.12;
+            this.coinElement.style.bottom = this.positionY + "vh";   // Move coinElement
 
-            // Check if the coin is out of view or collected by the player
-            if (this.positionY <= -this.height || this.checkPlayerCollision()) {
+            
+            if (this.positionY <= -this.height || this.checkPlayerCollision()) { // Check if the coin is out of view or collected by the player
                 if (this.checkPlayerCollision()) {
-                    this.game.score += 5; // Add extra points for collecting a coin
+                    this.game.score += 5;                            // Add extra points for collecting a coin
                     this.game.scoreCount.innerText = this.game.score;
                 }
-                this.resetCoinPosition(); // Reset coin in both cases
+                this.resetCoinPosition();                            // Reset coin in both cases
             }
 
             if (this.game.isGameOver) {
@@ -99,8 +97,7 @@ class Coin {
         }, 10);
     }
 
-    // Check for collision between player and coin
-    checkPlayerCollision() {
+    checkPlayerCollision() {                                         // Check for collision between player and coin
         return (
             this.game.player.positionX < this.positionX + this.width &&
             this.game.player.positionX + this.game.player.width > this.positionX &&
@@ -109,11 +106,61 @@ class Coin {
         );
     }
 
-    // Reset coin position after a collision or when it goes out of view
     resetCoinPosition() {
-        this.positionY = 100;
+        this.positionY = 100;                                        // Reset coin position after a collision or when it goes out of view
         this.positionX = Math.floor(Math.random() * (100 - this.width + 1));
         this.coinElement.style.left = this.positionX + "vw";
+    }
+}
+
+/***************************************************/
+/******************** BULLET ***********************/
+/***************************************************/
+class Bullet {
+    constructor(positionX, positionY, gameInstance) {
+        this.width = 1;                                                       // Bullet dimensions
+        this.height = 1;
+        this.positionX = positionX;
+        this.positionY = positionY;
+        this.bulletElement = null;
+        this.game = gameInstance;
+
+        this.createBulletElement();
+        this.moveBulletUp();
+    }
+
+    createBulletElement() {
+        this.bulletElement = document.createElement("div");
+        this.bulletElement.className = "bullet";                              // Add bullet class for styling
+        this.bulletElement.style.width = this.width + "vw";
+        this.bulletElement.style.height = this.height + "vh";
+        this.bulletElement.style.left = this.positionX + "vw";
+        this.bulletElement.style.bottom = this.positionY + "vh";
+
+        const board = document.getElementById("board");
+        board.appendChild(this.bulletElement);
+    }
+
+    moveBulletUp() {
+        this.interval = setInterval(() => {
+            this.positionY += 1;                                              // Bullet speed
+            this.bulletElement.style.bottom = this.positionY + "vh";
+
+            if (this.positionY > 100) {
+                clearInterval(this.interval);                                 // Remove bullet when it leaves the screen
+                this.bulletElement.remove();
+            }
+
+            if (this.game.isGameOver) {                                       // Remove bullets when there's a gameover
+                clearInterval(this.interval);
+                this.bulletElement.remove();
+            }
+        }, 20);
+    }
+
+    clearBullet() {
+        clearInterval(this.interval);
+        this.bulletElement.remove();
     }
 }
 
@@ -126,10 +173,10 @@ class Player {
     constructor(gameInstance) {
         this.height = 15;
         this.width = 10;
-        this.positionX = 50 - this.width / 2; // Centered starting position
-        this.startPoint = 100; // let player fall from the top in the beginning
+        this.positionX = 50 - this.width / 2;                        // Centered starting position
+        this.startPoint = 100;                                       // let player fall from the top in the beginning
         this.jumpHeight = 40;
-        this.positionY = this.startPoint; // Starting position
+        this.positionY = this.startPoint;                            // Starting position
         this.jumpSpeed = 0.6;
         this.fallSpeed = 0.3;
         this.jumping = false;
@@ -259,12 +306,15 @@ class Player {
 
     shoot() {
         document.addEventListener("keydown", (event) => {
-            if(event.code === "ArrowUp") {
+            if (event.code === "ArrowUp") {
                 console.log("Shoot");
+                const bullet = new Bullet(this.positionX + this.width / 2, this.positionY + this.height / 2, this.game);
+                this.game.bulletsArr.push(bullet);
             }
-        })
+        });
     }
 };
+
 
 /***************************************************/
 /******************** GAME *************************/
@@ -279,6 +329,7 @@ class Game {
         this.coinCount = 1;
         this.player = null;
         this.board = document.getElementById("board");
+        this.bulletsArr = [];
     }
 
     welcome() {
@@ -318,6 +369,7 @@ class Game {
         this.score = 0;
         this.platformsArr = [];
         this.coinsArr = [];
+        this.bulletsArr = [];
 
         this.board.style.backgroundColor = "#bad5ed";
 
@@ -350,6 +402,11 @@ class Game {
 
     gameOver() {
         this.isGameOver = true;
+
+        this.bulletsArr.forEach(bullet => {
+            bullet.clearBullet(); 
+        });                                                          // Remove bullets
+        this.bulletsArr = [];                                        // Clear the bullets array
 
         this.board.style.backgroundColor = "#6F73C6";                // Change board background 
         this.board.removeChild(this.scoreCount);                     // Remove score count

@@ -83,3 +83,10 @@ body {
     border: 2px solid black;
     position: absolute;
 }
+
+.bullet {
+    background-color: black;
+    border-radius: 50%;
+    border: 1px solid black;
+    position: absolute;
+}
