@@ -76,3 +76,9 @@ body {
     text-transform: uppercase;
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
+
+.coin {
+    background-color: gold;
+    border-radius: 50%;
+    position: absolute;
+}

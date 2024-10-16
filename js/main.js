@@ -50,6 +50,75 @@ class Platform {
 }
 
 /***************************************************/
+/******************* COIN CLASS ********************/
+/***************************************************/
+
+class Coin {
+    constructor(positionY, gameInstance) {
+        this.height = 3;
+        this.width = 3;
+        this.positionX = Math.floor(Math.random() * (100 - this.width + 1));
+        this.positionY = positionY;
+        this.coinElement = null;
+        this.fallInterval = null;
+        this.game = gameInstance;
+
+        this.createCoinElement();
+        this.moveCoinDown();
+    }
+
+    createCoinElement() {
+        this.coinElement = document.createElement("div");  // Create coinElement instead of using platformElement
+        this.coinElement.className = "coin";  // Apply a different class for coin styling
+        this.coinElement.style.height = this.height + "vh";
+        this.coinElement.style.width = this.width + "vw";
+        this.coinElement.style.left = this.positionX + "vw";
+        this.coinElement.style.bottom = this.positionY + "vh";
+
+        const board = document.getElementById("board");  // Append to board
+        board.appendChild(this.coinElement);
+    }
+
+    moveCoinDown() {
+        this.fallInterval = setInterval(() => {
+            this.positionY -= 0.1;
+            this.coinElement.style.bottom = this.positionY + "vh"; // Move coinElement
+
+            // Check if the coin is out of view or collected by the player
+            if (this.positionY <= -this.height || this.checkPlayerCollision()) {
+                if (this.checkPlayerCollision()) {
+                    this.game.score += 5; // Add extra points for collecting a coin
+                    this.game.scoreCount.innerText = this.game.score;
+                }
+                this.resetCoinPosition(); // Reset coin in both cases
+            }
+
+            if (this.game.isGameOver) {
+                clearInterval(this.fallInterval);
+            }
+        }, 10);
+    }
+
+    // Check for collision between player and coin
+    checkPlayerCollision() {
+        return (
+            this.game.player.positionX < this.positionX + this.width &&
+            this.game.player.positionX + this.game.player.width > this.positionX &&
+            this.game.player.positionY >= this.positionY &&
+            this.game.player.positionY <= this.positionY + this.height
+        );
+    }
+
+    // Reset coin position after a collision or when it goes out of view
+    resetCoinPosition() {
+        this.positionY = 100;
+        this.positionX = Math.floor(Math.random() * (100 - this.width + 1));
+        this.coinElement.style.left = this.positionX + "vw";
+    }
+}
+
+
+/***************************************************/
 /******************** PLAYER ***********************/
 /***************************************************/
 
@@ -73,7 +142,7 @@ class Player {
 
         this.createPlayer();
         this.jump();
-        this.setupMovement(); 
+        this.setupMovement();
     }
 
     createPlayer() {
@@ -121,7 +190,7 @@ class Player {
             this.playerElement.style.bottom = this.positionY + "vh";
 
             this.checkCollision();                                   // Continuously check for collisions
-            
+
             if (this.positionY < -this.height) {
                 this.game.gameOver();                                // Game over once the player falls below the board
             }
@@ -198,6 +267,7 @@ class Game {
         this.score = 0;
         this.platformsArr = [];
         this.platformCount = 5;
+        this.coinCount = 1;
         this.player = null;
         this.board = document.getElementById("board");
     }
@@ -221,7 +291,7 @@ class Game {
             this.startButton.style.backgroundColor = "white";
             this.startButton.style.fontWeight = 900;
         });
-        
+
         this.startButton.addEventListener("mouseout", () => {
             this.startButton.style.backgroundColor = "#E2EB67";
             this.startButton.style.fontWeight = 400;
@@ -238,10 +308,14 @@ class Game {
         this.isGameOver = false;
         this.score = 0;
         this.platformsArr = [];
+        this.coinsArr = [];
+
+        this.board.style.backgroundColor = "#bad5ed";
 
         this.showScore()                                             // Show score 
         this.createPlatforms(this.platformCount);                    // Create platforms
         this.player = new Player(this);                              // Create player
+        this.createCoins(this.coinCount);                            // Create coins
         this.board.style.backgroundColor = "#bad5ed";
     }
 
@@ -259,6 +333,12 @@ class Game {
         }
     }
 
+    createCoins(count) {
+        let positionY = Math.random() * 100; // Random vertical position
+        const newCoin = new Coin(positionY, this);
+        this.coinsArr.push(newCoin);
+    }
+
     gameOver() {
         this.isGameOver = true;
 
@@ -267,10 +347,18 @@ class Game {
         this.board.removeChild(this.player.playerElement);           // Remove player
 
         clearInterval(this.player.fallId);                           // Clear falling interval
+
+        // Remove all coins properly by using coinElement
+        this.coinsArr.forEach(coin => {
+            clearInterval(coin.fallInterval);  // Stop coin's falling interval
+            this.board.removeChild(coin.coinElement);  // Remove the actual coin element
+        });                                                         // Stop coins from falling
+
         this.platformsArr.forEach(platform => {
             clearInterval(platform.fallInterval);
             this.board.removeChild(platform.platformElement);
         });                                                          // Stop platforms from falling
+
 
         // Show a game over message
         this.gameOverMessage = document.createElement("div");
@@ -289,7 +377,7 @@ class Game {
             this.restartButton.style.backgroundColor = "white";
             this.restartButton.style.fontWeight = 900;
         });
-        
+
         this.restartButton.addEventListener("mouseout", () => {
             this.restartButton.style.backgroundColor = "#E2EB67";
             this.restartButton.style.fontWeight = 400;
@@ -299,7 +387,7 @@ class Game {
             this.board.style.backgroundColor = "#DCEEFE";
             this.board.removeChild(this.gameOverMessage);
             this.board.removeChild(this.restartButton);
-            
+
             this.startPlay();                                        // Start new game
         });
     }
