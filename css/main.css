@@ -78,7 +78,8 @@ body {
 }
 
 .coin {
-    background-color: gold;
+    background-color: #E2EB67;
     border-radius: 50%;
+    border: 2px solid black;
     position: absolute;
 }

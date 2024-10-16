@@ -104,8 +104,8 @@ class Coin {
         return (
             this.game.player.positionX < this.positionX + this.width &&
             this.game.player.positionX + this.game.player.width > this.positionX &&
-            this.game.player.positionY >= this.positionY &&
-            this.game.player.positionY <= this.positionY + this.height
+            this.game.player.positionY < this.positionY + this.height &&
+            this.game.player.positionY + this.game.player.height > this.positionY
         );
     }
 
@@ -213,7 +213,7 @@ class Player {
             }
         });
 
-        if (hasCollided && !this.jumping) {
+        if (hasCollided) {
             this.jump();                                             // Only jump if the player is standing on a platform
         }
     }
@@ -334,7 +334,7 @@ class Game {
     }
 
     createCoins(count) {
-        let positionY = Math.random() * 100; // Random vertical position
+        let positionY = Math.random() * 100;                         // Random vertical position
         const newCoin = new Coin(positionY, this);
         this.coinsArr.push(newCoin);
     }
@@ -348,11 +348,10 @@ class Game {
 
         clearInterval(this.player.fallId);                           // Clear falling interval
 
-        // Remove all coins properly by using coinElement
         this.coinsArr.forEach(coin => {
-            clearInterval(coin.fallInterval);  // Stop coin's falling interval
-            this.board.removeChild(coin.coinElement);  // Remove the actual coin element
-        });                                                         // Stop coins from falling
+            clearInterval(coin.fallInterval);                        // Stop coin's falling interval
+            this.board.removeChild(coin.coinElement);                // Remove the actual coin element
+        });
 
         this.platformsArr.forEach(platform => {
             clearInterval(platform.fallInterval);
