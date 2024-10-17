@@ -82,43 +82,43 @@ class Platform {
 /******************* COIN CLASS ********************/
 /***************************************************/
 
-class Coin {
+class Item {
     constructor(positionY, gameInstance) {
         this.height = 3;
         this.width = 3;
         this.positionX = Math.floor(Math.random() * (100 - this.width + 1));
         this.positionY = positionY;
-        this.coinElement = null;
+        this.itemElement = null;
         this.fallInterval = null;
         this.game = gameInstance;
 
-        this.createCoinElement();
-        this.moveCoinDown();
+        this.createItemElement();
+        this.moveItemDown();
     }
 
-    createCoinElement() {
-        this.coinElement = document.createElement("div");
-        this.coinElement.className = "coin";
-        this.coinElement.style.height = this.height + "%";
-        this.coinElement.style.width = this.width + "%";
-        this.coinElement.style.left = this.positionX + "%";
-        this.coinElement.style.bottom = this.positionY + "%";
+    createItemElement() {
+        this.itemElement = document.createElement("div");
+        this.itemElement.className = "item";
+        this.itemElement.style.height = this.height + "%";
+        this.itemElement.style.width = this.width + "%";
+        this.itemElement.style.left = this.positionX + "%";
+        this.itemElement.style.bottom = this.positionY + "%";
 
         const board = document.getElementById("board");
-        board.appendChild(this.coinElement);
+        board.appendChild(this.itemElement);
     }
 
-    moveCoinDown() {
+    moveItemDown() {
         this.fallInterval = setInterval(() => {
             this.positionY -= 0.12;
-            this.coinElement.style.bottom = this.positionY + "%";
+            this.itemElement.style.bottom = this.positionY + "%";
 
             if (this.positionY <= -this.height || this.checkPlayerCollision()) {
                 if (this.checkPlayerCollision()) {
                     this.game.score += 5;
                     this.game.scoreCount.innerText = this.game.score;
                 }
-                this.resetCoinPosition();
+                this.resetItemPosition();
             }
 
             if (this.game.isGameOver) {
@@ -136,10 +136,10 @@ class Coin {
         );
     }
 
-    resetCoinPosition() {
+    resetItemPosition() {
         this.positionY = 100;
         this.positionX = Math.floor(Math.random() * (100 - this.width + 1));
-        this.coinElement.style.left = this.positionX + "%";
+        this.itemElement.style.left = this.positionX + "%";
     }
 }
 
@@ -372,7 +372,7 @@ class Game {
         this.score = 0;
         this.platformsArr = [];
         this.platformCount = 5;
-        this.coinCount = 1;
+        this.itemCount = 1;
         this.player = null;
         this.board = document.getElementById("board");
         this.bulletsArr = [];
@@ -382,7 +382,7 @@ class Game {
         this.isGameOver = false;
         this.score = 0;
         this.platformsArr = [];
-        this.coinsArr = [];
+        this.itemsArr = [];
         this.bulletsArr = [];
 
         this.board.style.backgroundColor = "#bad5ed";
@@ -390,7 +390,7 @@ class Game {
         this.showScore();
         this.createPlatforms(this.platformCount);
         this.player = new Player(this);
-        this.createCoins(this.coinCount);
+        this.createItems(this.itemCount);
     }
 
     showScore() {
@@ -407,10 +407,10 @@ class Game {
         }
     }
 
-    createCoins(count) {
+    createItems(count) {
         let positionY = Math.random() * 100;
-        const newCoin = new Coin(positionY, this);
-        this.coinsArr.push(newCoin);
+        const newItem = new Item(positionY, this);
+        this.itemsArr.push(newItem);
     }
 
     gameOver() {
