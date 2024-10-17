@@ -106,7 +106,7 @@ class Item {
         this.itemElement.style.left = this.positionX + "%";
         this.itemElement.style.bottom = this.positionY + "%";
 
-        if(this.itemType === "coin") {
+        if (this.itemType === "coin") {
             this.itemElement.className = "coin";
         } else if (this.itemType === "enemy") {
             this.itemElement.className = "enemy";
@@ -403,6 +403,7 @@ class Game {
         this.player = null;
         this.board = document.getElementById("board");
         this.bulletsArr = [];
+        this.lostSound = new Audio('./sounds/lost.wav');
     }
 
     startPlay() {
@@ -438,12 +439,15 @@ class Game {
         let positionY = Math.random() * 100;
         const newCoin = new Item(positionY, this, "coin"); // create coin item and pass item type to item creation method
         const newEnemy = new Item(positionY, this, "enemy"); // create enemy item and pass item type to item creation method
-        this.itemsArr.push(newCoin); 
+        this.itemsArr.push(newCoin);
         this.itemsArr.push(newEnemy); // push both to items array
     }
 
     gameOver() {
         this.isGameOver = true;
+
+        this.lostSound.play(); // Play the gameover sound
+        this.lostSound.volume = 0.4;  // Adjust volume
 
         this.bulletsArr.forEach(bullet => {
             bullet.clearBullet();
@@ -452,7 +456,10 @@ class Game {
 
         localStorage.setItem('score', this.score);
 
-        window.location.href = 'gameover.html';
+        // Delay the redirection to allow the sound to play
+        setTimeout(() => {
+            window.location.href = 'gameover.html';
+        }, 2000);
     }
 }
 
