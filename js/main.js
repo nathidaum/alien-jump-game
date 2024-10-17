@@ -166,6 +166,7 @@ class Bullet {
         this.bulletElement = null;
         this.game = gameInstance;
         this.board = document.getElementById("board");
+        this.shootSound = new Audio('./sounds/shoot.wav');
 
         this.createBulletElement();
     }
@@ -180,12 +181,17 @@ class Bullet {
 
         this.board.appendChild(this.bulletElement);
         this.moveBulletUp();
+
+        this.shootSound.play(); // Play the shoot sound
+        this.shootSound.volume = 0.4;  // Adjust volume
     }
 
     moveBulletUp() {
         this.interval = setInterval(() => {
             this.positionY += 1;
             this.bulletElement.style.bottom = this.positionY + "%";
+
+            this.shootSound = new Audio('./sounds/shoot.wav');
 
             if (this.positionY > 100) {
                 clearInterval(this.interval);
@@ -228,6 +234,7 @@ class Player {
         this.game = gameInstance;
         this.shootListener = null;
         this.jumpSound = new Audio('./sounds/jump.wav');
+        this.shootSound = new Audio('./sounds/shoot.wav');
 
         this.createPlayer();
         this.jump();
