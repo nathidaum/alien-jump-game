@@ -87,16 +87,17 @@ body {
     position: absolute;
 }
 
-.coin {
-    background-color: #E2EB67;
-    border-radius: 50%;
-    border: 3px solid black;
+.rocket {
+    background-size: 100% 100%;
+    background-image: url(../images/rocket.png);
+    background-repeat: no-repeat;
     position: absolute;
 }
 
-.enemy {
-    background-color: rgb(255, 192, 247);
-    border: 3px solid black;
+.asteroid {
+    background-size: 100% 100%;
+    background-image: url(../images/asteroid.png);
+    background-repeat: no-repeat;
     position: absolute;
 }
 

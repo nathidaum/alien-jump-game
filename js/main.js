@@ -84,8 +84,8 @@ class Platform {
 
 class Item {
     constructor(positionY, gameInstance, itemType) {
-        this.height = 3;
-        this.width = 3;
+        this.height = 6;
+        this.width = 8;
         this.positionX = Math.floor(Math.random() * (100 - this.width + 1));
         this.positionY = positionY;
         this.itemElement = null;
@@ -106,10 +106,10 @@ class Item {
         this.itemElement.style.left = this.positionX + "%";
         this.itemElement.style.bottom = this.positionY + "%";
 
-        if (this.itemType === "coin") {
-            this.itemElement.className = "coin";
-        } else if (this.itemType === "enemy") {
-            this.itemElement.className = "enemy";
+        if (this.itemType === "rocket") {
+            this.itemElement.className = "rocket";
+        } else if (this.itemType === "asteroid") {
+            this.itemElement.className = "asteroid";
         }
 
         const board = document.getElementById("board");
@@ -122,16 +122,16 @@ class Item {
             this.itemElement.style.bottom = this.positionY + "%";
 
             if (this.positionY <= -this.height || this.checkPlayerCollision()) {
-                if (this.checkPlayerCollision() && this.itemType === "coin") {
+                if (this.checkPlayerCollision() && this.itemType === "rocket") {
                     this.game.score += 5;
                     this.game.scoreCount.innerText = this.game.score;
-                    console.log("collected coin")
+                    console.log("collected rocket")
 
-                    this.collectCoinSound.play(); // Play collect coin sound
+                    this.collectCoinSound.play(); // Play collect rocket sound
                     this.collectCoinSound.volume = 0.6;  // Adjust volume
 
-                } else if (this.checkPlayerCollision() && this.itemType === "enemy") {
-                    console.log("touched enemy")
+                } else if (this.checkPlayerCollision() && this.itemType === "asteroid") {
+                    console.log("touched asteroid")
                     this.game.gameOver();
                 }
                 this.resetItemPosition()
@@ -172,7 +172,7 @@ class Bullet {
         this.game = gameInstance;
         this.board = document.getElementById("board");
         this.shootSound = new Audio('./sounds/shoot.wav');
-        this.killEnemySound = new Audio('./sounds/killenemy.wav');
+        this.killAsteroidSound = new Audio('./sounds/killasteroid.wav');
 
         this.createBulletElement();
     }
@@ -201,12 +201,12 @@ class Bullet {
 
             // Check for collision with items
             this.game.itemsArr.forEach(item => {
-                if (item.itemType === "enemy" && this.checkBulletCollision(item)) {
-                    item.itemElement.remove();  // Remove enemy
+                if (item.itemType === "asteroid" && this.checkBulletCollision(item)) {
+                    item.itemElement.remove();  // Remove asteroid
                     this.clearBullet();  // Remove bullet
 
-                    this.killEnemySound.play(); // Play the kill enemy sound
-                    this.killEnemySound.volume = 0.4;  // Adjust volume
+                    this.killAsteroidSound.play(); // Play the kill asteroid sound
+                    this.killAsteroidSound.volume = 0.4;  // Adjust volume
                 }
             });
 
@@ -465,10 +465,10 @@ class Game {
 
     createItems(count) {
         let positionY = Math.random() * 100;
-        const newCoin = new Item(positionY, this, "coin"); // create coin item and pass item type to item creation method
-        const newEnemy = new Item(positionY, this, "enemy"); // create enemy item and pass item type to item creation method
-        this.itemsArr.push(newCoin);
-        this.itemsArr.push(newEnemy); // push both to items array
+        const newRocket = new Item(positionY, this, "rocket"); // create rocket item and pass item type to item creation method
+        const newAsteroid = new Item(positionY, this, "asteroid"); // create asteroid item and pass item type to item creation method
+        this.itemsArr.push(newRocket);
+        this.itemsArr.push(newAsteroid); // push both to items array
     }
 
     gameOver() {
