@@ -404,6 +404,7 @@ class Game {
         this.board = document.getElementById("board");
         this.bulletsArr = [];
         this.lostSound = new Audio('./sounds/lost.wav');
+        this.musicSound = new Audio ('./sounds/music.wav')
     }
 
     startPlay() {
@@ -419,6 +420,10 @@ class Game {
         this.createPlatforms(this.platformCount);
         this.player = new Player(this);
         this.createItems(this.itemCount);
+
+        this.musicSound.loop = true;  // Set the music to loop
+        this.musicSound.play(); // Play the music
+        this.musicSound.volume = 0.1;  // Adjust volume
     }
 
     showScore() {
