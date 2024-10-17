@@ -118,6 +118,11 @@ class Item {
 
     moveItemDown() {
         this.fallInterval = setInterval(() => {
+            if (!this.itemElement) {  // Stop if the item is removed
+                clearInterval(this.fallInterval);
+                return;
+            }
+
             this.positionY -= 0.12;
             this.itemElement.style.bottom = this.positionY + "%";
 
@@ -164,8 +169,8 @@ class Item {
 /***************************************************/
 class Bullet {
     constructor(positionX, positionY, gameInstance) {
-        this.width = 1;
-        this.height = 1;
+        this.width = 2;
+        this.height = 2;
         this.positionX = positionX;
         this.positionY = positionY;
         this.bulletElement = null;
@@ -200,13 +205,18 @@ class Bullet {
             this.shootSound = new Audio('./sounds/shoot.wav');
 
             // Check for collision with items
-            this.game.itemsArr.forEach(item => {
+            this.game.itemsArr.forEach((item, index) => {
                 if (item.itemType === "asteroid" && this.checkBulletCollision(item)) {
-                    item.itemElement.remove();  // Remove asteroid
+                    item.itemElement.remove();  // Remove asteroid from DOM
+                    clearInterval(item.fallInterval); // Clear the interval for the asteroid's movement
+                    this.game.itemsArr.splice(index, 1);  // Remove item from items array to prevent future collisions
                     this.clearBullet();  // Remove bullet
-
                     this.killAsteroidSound.play(); // Play the kill asteroid sound
                     this.killAsteroidSound.volume = 0.4;  // Adjust volume
+
+                    // Create and add a new asteroid to the game
+                    const newAsteroid = new Item(100, this.game, "asteroid");
+                    this.game.itemsArr.push(newAsteroid);  // Add the new asteroid to the items array
                 }
             });
 
@@ -221,16 +231,31 @@ class Bullet {
             }
         }, 20);
     }
-    
-    checkBulletCollision(item) { // Check for collision between bullet and item
-    return (
-        this.positionX < item.positionX + item.width &&
-        this.positionX + this.width > item.positionX &&
-        this.positionY < item.positionY + item.height &&
-        this.positionY + this.height > item.positionY
-    );
-}
 
+
+
+    checkBulletCollision(item) {
+        // If the item has already been removed from the DOM, skip collision detection
+        if (!item.itemElement) return false;
+
+        return (
+            this.positionX < item.positionX + item.width &&
+            this.positionX + this.width > item.positionX &&
+            this.positionY < item.positionY + item.height &&
+            this.positionY + this.height > item.positionY
+        );
+    }
+
+    checkPlayerCollision() {
+        if (!this.itemElement) return false;  // Skip if the item has been removed
+
+        return (
+            this.game.player.positionX < this.positionX + this.width &&
+            this.game.player.positionX + this.game.player.width > this.positionX &&
+            this.game.player.positionY < this.positionY + this.height &&
+            this.game.player.positionY + this.game.player.height > this.positionY
+        );
+    }
 
 
     clearBullet() {
@@ -286,67 +311,71 @@ class Player {
         // Clear previous intervals to avoid stacking
         clearInterval(this.fallId);
         clearInterval(this.jumpId);
-    
+
+
         // Set up initial state for the jump
         this.jumping = true;
         this.falling = false;
         this.jumpSpeed = 0.6; // Reset the jump speed
-    
+
+        this.jumpSound.play(); // Play jump sound
+        this.jumpSound.volume = 0.4;  // Adjust volume
+
         // Squat before the jump
         this.playerElement.style.height = (this.height * 0.9) + "%"; // Squat to 90% height
-    
+
         // Start the actual jump after a brief delay
         setTimeout(() => {
             this.jumpId = setInterval(() => {
                 this.jumpSpeed -= 0.01;
                 this.positionY += this.jumpSpeed;
                 this.playerElement.style.bottom = this.positionY + "%";
-    
+
                 // Stretch while going up
                 if (this.jumpSpeed > 0.3) {
                     this.playerElement.style.height = (this.height * 1.1) + "%"; // Stretch to 110% height
                 }
-    
+
                 // When the jump reaches the peak, initiate the fall
                 if (this.jumpSpeed <= 0) {
                     this.fall();
                 }
-    
+
                 // Check if the player reached the max height
                 if (this.positionY >= this.startPoint + this.jumpHeight) {
                     this.fall();
                 }
             }, 20);
         }, 100); // Brief delay to mimic a jump preparation
-    
+
     }
-    
+
     fall() {
         // Clear jump interval to avoid stacking
         clearInterval(this.jumpId);
-    
+
         this.falling = true;
         this.jumping = false;
         this.fallSpeed = 0.3; // Reset fall speed
-    
+
         // Return the player's height to normal
         this.playerElement.style.height = this.height + "%"; // Reset to normal height
-    
+
         // Start falling
         this.fallId = setInterval(() => {
             this.fallSpeed += 0.01; // Gradually increase the fall speed
             this.positionY -= this.fallSpeed;
             this.playerElement.style.bottom = this.positionY + "%";
-    
+
             // Check for collision with the ground or platform
             this.checkCollision();
-    
+
             // End game if the player falls below the screen
             if (this.positionY < -this.height) {
                 this.game.gameOver();
             }
         }, 20);
-    }    
+    }
 
     checkCollision() {
         let hasCollided = false;
