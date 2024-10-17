@@ -283,47 +283,70 @@ class Player {
     }
 
     jump() {
+        // Clear previous intervals to avoid stacking
         clearInterval(this.fallId);
+        clearInterval(this.jumpId);
+    
+        // Set up initial state for the jump
         this.jumping = true;
         this.falling = false;
-        this.jumpSpeed = 0.6;
-
-        this.jumpSound.play(); // Play the jump sound
-        this.jumpSound.volume = 0.2;  // Adjust volume
-
-        this.jumpId = setInterval(() => {
-            this.jumpSpeed -= 0.01;
-            this.positionY += this.jumpSpeed;
-            this.playerElement.style.bottom = this.positionY + "%";
-
-            if (this.positionY >= this.startPoint + this.jumpHeight || this.jumpSpeed <= 0) {
-                this.fall();
-            } else if (this.positionY >= 100 - this.height) {
-                this.fall();
-            }
-        }, 20);
+        this.jumpSpeed = 0.6; // Reset the jump speed
+    
+        // Squat before the jump
+        this.playerElement.style.height = (this.height * 0.9) + "%"; // Squat to 90% height
+    
+        // Start the actual jump after a brief delay
+        setTimeout(() => {
+            this.jumpId = setInterval(() => {
+                this.jumpSpeed -= 0.01;
+                this.positionY += this.jumpSpeed;
+                this.playerElement.style.bottom = this.positionY + "%";
+    
+                // Stretch while going up
+                if (this.jumpSpeed > 0.3) {
+                    this.playerElement.style.height = (this.height * 1.1) + "%"; // Stretch to 110% height
+                }
+    
+                // When the jump reaches the peak, initiate the fall
+                if (this.jumpSpeed <= 0) {
+                    this.fall();
+                }
+    
+                // Check if the player reached the max height
+                if (this.positionY >= this.startPoint + this.jumpHeight) {
+                    this.fall();
+                }
+            }, 20);
+        }, 100); // Brief delay to mimic a jump preparation
+    
     }
-
+    
     fall() {
+        // Clear jump interval to avoid stacking
         clearInterval(this.jumpId);
-
+    
         this.falling = true;
         this.jumping = false;
-        this.fallSpeed = 0.3;
-
+        this.fallSpeed = 0.3; // Reset fall speed
+    
+        // Return the player's height to normal
+        this.playerElement.style.height = this.height + "%"; // Reset to normal height
+    
+        // Start falling
         this.fallId = setInterval(() => {
-            this.fallSpeed += 0.01;
+            this.fallSpeed += 0.01; // Gradually increase the fall speed
             this.positionY -= this.fallSpeed;
             this.playerElement.style.bottom = this.positionY + "%";
-
+    
+            // Check for collision with the ground or platform
             this.checkCollision();
-
+    
+            // End game if the player falls below the screen
             if (this.positionY < -this.height) {
                 this.game.gameOver();
-
             }
         }, 20);
-    }
+    }    
 
     checkCollision() {
         let hasCollided = false;
