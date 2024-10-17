@@ -194,7 +194,7 @@ class Bullet {
         this.moveBulletUp();
 
         this.shootSound.play(); // Play the shoot sound
-        this.shootSound.volume = 0.3;  // Adjust volume
+        this.shootSound.volume = 0.1;  // Adjust volume
     }
 
     moveBulletUp() {
