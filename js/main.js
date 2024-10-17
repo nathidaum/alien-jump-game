@@ -172,6 +172,7 @@ class Bullet {
         this.game = gameInstance;
         this.board = document.getElementById("board");
         this.shootSound = new Audio('./sounds/shoot.wav');
+        this.killEnemySound = new Audio('./sounds/killenemy.wav');
 
         this.createBulletElement();
     }
@@ -188,7 +189,7 @@ class Bullet {
         this.moveBulletUp();
 
         this.shootSound.play(); // Play the shoot sound
-        this.shootSound.volume = 0.4;  // Adjust volume
+        this.shootSound.volume = 0.3;  // Adjust volume
     }
 
     moveBulletUp() {
@@ -197,6 +198,17 @@ class Bullet {
             this.bulletElement.style.bottom = this.positionY + "%";
 
             this.shootSound = new Audio('./sounds/shoot.wav');
+
+            // Check for collision with items
+            this.game.itemsArr.forEach(item => {
+                if (item.itemType === "enemy" && this.checkBulletCollision(item)) {
+                    item.itemElement.remove();  // Remove enemy
+                    this.clearBullet();  // Remove bullet
+
+                    this.killEnemySound.play(); // Play the kill enemy sound
+                    this.killEnemySound.volume = 0.4;  // Adjust volume
+                }
+            });
 
             if (this.positionY > 100) {
                 clearInterval(this.interval);
@@ -209,6 +221,17 @@ class Bullet {
             }
         }, 20);
     }
+    
+    checkBulletCollision(item) { // Check for collision between bullet and item
+    return (
+        this.positionX < item.positionX + item.width &&
+        this.positionX + this.width > item.positionX &&
+        this.positionY < item.positionY + item.height &&
+        this.positionY + this.height > item.positionY
+    );
+}
+
+
 
     clearBullet() {
         clearInterval(this.interval);
@@ -404,7 +427,7 @@ class Game {
         this.board = document.getElementById("board");
         this.bulletsArr = [];
         this.lostSound = new Audio('./sounds/lost.wav');
-        this.musicSound = new Audio ('./sounds/music.wav')
+        this.musicSound = new Audio('./sounds/music.wav')
     }
 
     startPlay() {
