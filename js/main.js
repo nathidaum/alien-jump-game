@@ -50,10 +50,10 @@ class Platform {
     createPlatformElement() {
         this.platformElement = document.createElement("div");
         this.platformElement.className = "platform";
-        this.platformElement.style.height = this.height + "vh";
-        this.platformElement.style.width = this.width + "vw";
-        this.platformElement.style.left = this.positionX + "vw";
-        this.platformElement.style.bottom = this.positionY + "vh";
+        this.platformElement.style.height = this.height + "%";
+        this.platformElement.style.width = this.width + "%";
+        this.platformElement.style.left = this.positionX + "%";
+        this.platformElement.style.bottom = this.positionY + "%";
 
         const board = document.getElementById("board");
         board.appendChild(this.platformElement);
@@ -62,12 +62,12 @@ class Platform {
     movePlatformDown() {
         this.fallInterval = setInterval(() => {
             this.positionY -= 0.1;
-            this.platformElement.style.bottom = this.positionY + "vh";
+            this.platformElement.style.bottom = this.positionY + "%";
 
             if (this.positionY <= -this.height) {
                 this.positionY = 100;
                 this.positionX = Math.floor(Math.random() * (100 - this.width + 1));
-                this.platformElement.style.left = this.positionX + "vw";
+                this.platformElement.style.left = this.positionX + "%";
                 this.game.score++;
                 this.game.scoreCount.innerText = this.game.score;
 
@@ -99,10 +99,10 @@ class Coin {
     createCoinElement() {
         this.coinElement = document.createElement("div");
         this.coinElement.className = "coin";
-        this.coinElement.style.height = this.height + "vh";
-        this.coinElement.style.width = this.width + "vw";
-        this.coinElement.style.left = this.positionX + "vw";
-        this.coinElement.style.bottom = this.positionY + "vh";
+        this.coinElement.style.height = this.height + "%";
+        this.coinElement.style.width = this.width + "%";
+        this.coinElement.style.left = this.positionX + "%";
+        this.coinElement.style.bottom = this.positionY + "%";
 
         const board = document.getElementById("board");
         board.appendChild(this.coinElement);
@@ -111,7 +111,7 @@ class Coin {
     moveCoinDown() {
         this.fallInterval = setInterval(() => {
             this.positionY -= 0.12;
-            this.coinElement.style.bottom = this.positionY + "vh";
+            this.coinElement.style.bottom = this.positionY + "%";
 
             if (this.positionY <= -this.height || this.checkPlayerCollision()) {
                 if (this.checkPlayerCollision()) {
@@ -139,7 +139,7 @@ class Coin {
     resetCoinPosition() {
         this.positionY = 100;
         this.positionX = Math.floor(Math.random() * (100 - this.width + 1));
-        this.coinElement.style.left = this.positionX + "vw";
+        this.coinElement.style.left = this.positionX + "%";
     }
 }
 
@@ -162,10 +162,10 @@ class Bullet {
     createBulletElement() {
         this.bulletElement = document.createElement("div");
         this.bulletElement.className = "bullet";
-        this.bulletElement.style.width = this.width + "vw";
-        this.bulletElement.style.height = this.height + "vh";
-        this.bulletElement.style.left = this.positionX + "vw";
-        this.bulletElement.style.bottom = this.positionY + "vh";
+        this.bulletElement.style.width = this.width + "%";
+        this.bulletElement.style.height = this.height + "%";
+        this.bulletElement.style.left = this.positionX + "%";
+        this.bulletElement.style.bottom = this.positionY + "%";
 
         this.board.appendChild(this.bulletElement);
         this.moveBulletUp();
@@ -174,7 +174,7 @@ class Bullet {
     moveBulletUp() {
         this.interval = setInterval(() => {
             this.positionY += 1;
-            this.bulletElement.style.bottom = this.positionY + "vh";
+            this.bulletElement.style.bottom = this.positionY + "%";
 
             if (this.positionY > 100) {
                 clearInterval(this.interval);
@@ -226,10 +226,10 @@ class Player {
     createPlayer() {
         this.playerElement = document.createElement("div");
         this.playerElement.id = "player";
-        this.playerElement.style.height = this.height + "vh";
-        this.playerElement.style.width = this.width + "vw";
-        this.playerElement.style.left = this.positionX + "vw";
-        this.playerElement.style.bottom = this.positionY + "vh";
+        this.playerElement.style.height = this.height + "%";
+        this.playerElement.style.width = this.width + "%";
+        this.playerElement.style.left = this.positionX + "%";
+        this.playerElement.style.bottom = this.positionY + "%";
 
         const board = document.getElementById("board");
         board.appendChild(this.playerElement);
@@ -244,7 +244,7 @@ class Player {
         this.jumpId = setInterval(() => {
             this.jumpSpeed -= 0.01;
             this.positionY += this.jumpSpeed;
-            this.playerElement.style.bottom = this.positionY + "vh";
+            this.playerElement.style.bottom = this.positionY + "%";
 
             if (this.positionY >= this.startPoint + this.jumpHeight || this.jumpSpeed <= 0) {
                 this.fall();
@@ -264,7 +264,7 @@ class Player {
         this.fallId = setInterval(() => {
             this.fallSpeed += 0.01;
             this.positionY -= this.fallSpeed;
-            this.playerElement.style.bottom = this.positionY + "vh";
+            this.playerElement.style.bottom = this.positionY + "%";
 
             this.checkCollision();
 
@@ -298,14 +298,14 @@ class Player {
     moveRight() {
         if (this.positionX < 100 - this.width) {
             this.positionX += 1;
-            this.playerElement.style.left = this.positionX + "vw";
+            this.playerElement.style.left = this.positionX + "%";
         }
     }
 
     moveLeft() {
         if (this.positionX > 0) {
             this.positionX -= 1;
-            this.playerElement.style.left = this.positionX + "vw";
+            this.playerElement.style.left = this.positionX + "%";
         }
     }
 
