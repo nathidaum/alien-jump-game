@@ -79,11 +79,11 @@ class Platform {
 }
 
 /***************************************************/
-/******************* COIN CLASS ********************/
+/******************* ITEM CLASS ********************/
 /***************************************************/
 
 class Item {
-    constructor(positionY, gameInstance) {
+    constructor(positionY, gameInstance, itemType) {
         this.height = 3;
         this.width = 3;
         this.positionX = Math.floor(Math.random() * (100 - this.width + 1));
@@ -91,6 +91,7 @@ class Item {
         this.itemElement = null;
         this.fallInterval = null;
         this.game = gameInstance;
+        this.itemType = itemType;
 
         this.createItemElement();
         this.moveItemDown();
@@ -117,8 +118,10 @@ class Item {
                 if (this.checkPlayerCollision()) {
                     this.game.score += 5;
                     this.game.scoreCount.innerText = this.game.score;
+                    this.resetItemPosition();
+                } else if (this.checkPlayerCollision() && this.itemType === "enemy") {
+                    this.game.gameOver();
                 }
-                this.resetItemPosition();
             }
 
             if (this.game.isGameOver) {
