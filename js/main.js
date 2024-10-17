@@ -227,6 +227,7 @@ class Player {
         this.moveRightInterval = null;
         this.game = gameInstance;
         this.shootListener = null;
+        this.jumpSound = new Audio('./sounds/jump.wav');
 
         this.createPlayer();
         this.jump();
@@ -251,6 +252,9 @@ class Player {
         this.jumping = true;
         this.falling = false;
         this.jumpSpeed = 0.6;
+
+        this.jumpSound.play(); // Play the jump sound
+        this.jumpSound.volume = 0.2;  // Adjust volume
 
         this.jumpId = setInterval(() => {
             this.jumpSpeed -= 0.01;
