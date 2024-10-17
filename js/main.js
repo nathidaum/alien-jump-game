@@ -115,14 +115,16 @@ class Item {
             this.itemElement.style.bottom = this.positionY + "%";
 
             if (this.positionY <= -this.height || this.checkPlayerCollision()) {
-                if (this.checkPlayerCollision()) {
+                if (this.checkPlayerCollision() && this.itemType === "coin") {
                     this.game.score += 5;
                     this.game.scoreCount.innerText = this.game.score;
-                    this.resetItemPosition();
+                    console.log("collected coin")
                 } else if (this.checkPlayerCollision() && this.itemType === "enemy") {
+                    console.log("touched enemy")
                     this.game.gameOver();
                 }
-            }
+                this.resetItemPosition()
+            };
 
             if (this.game.isGameOver) {
                 clearInterval(this.fallInterval);
@@ -412,8 +414,10 @@ class Game {
 
     createItems(count) {
         let positionY = Math.random() * 100;
-        const newItem = new Item(positionY, this);
-        this.itemsArr.push(newItem);
+        const newCoin = new Item(positionY, this, "coin"); // create coin item and pass item type to item creation method
+        const newEnemy = new Item(positionY, this, "enemy"); // create enemy item and pass item type to item creation method
+        this.itemsArr.push(newCoin); 
+        this.itemsArr.push(newEnemy); // push both to items array
     }
 
     gameOver() {
