@@ -105,6 +105,12 @@ class Item {
         this.itemElement.style.left = this.positionX + "%";
         this.itemElement.style.bottom = this.positionY + "%";
 
+        if(this.itemType === "coin") {
+            this.itemElement.className = "coin";
+        } else if (this.itemType === "enemy") {
+            this.itemElement.className = "enemy";
+        }
+
         const board = document.getElementById("board");
         board.appendChild(this.itemElement);
     }
