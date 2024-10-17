@@ -285,14 +285,11 @@ class Player {
                 this.positionY >= platformInstance.positionY &&
                 this.positionY <= platformInstance.positionY + platformInstance.height
             ) {
-                hasCollided = true;
+                this.jump();
                 this.startPoint = this.positionY;
+                return;
             }
         });
-
-        if (hasCollided) {
-            this.jump();
-        }
     }
 
     moveRight() {
