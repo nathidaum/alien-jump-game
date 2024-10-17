@@ -92,6 +92,7 @@ class Item {
         this.fallInterval = null;
         this.game = gameInstance;
         this.itemType = itemType;
+        this.collectCoinSound = new Audio('./sounds/collectcoin.wav');
 
         this.createItemElement();
         this.moveItemDown();
@@ -125,6 +126,10 @@ class Item {
                     this.game.score += 5;
                     this.game.scoreCount.innerText = this.game.score;
                     console.log("collected coin")
+
+                    this.collectCoinSound.play(); // Play collect coin sound
+                    this.collectCoinSound.volume = 0.6;  // Adjust volume
+
                 } else if (this.checkPlayerCollision() && this.itemType === "enemy") {
                     console.log("touched enemy")
                     this.game.gameOver();
