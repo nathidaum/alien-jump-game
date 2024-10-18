@@ -23,7 +23,7 @@ Help the little alien get back to space by jumping on clouds, collecting rockets
 
 **Shoot**: Shoot comets using the arrow up key.
 
-![Instructions](../images/instructions.png)
+![Instructions](./images/instructions.png)
 
 ## Have fun playing!
 
