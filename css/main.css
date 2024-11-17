@@ -16,7 +16,7 @@ body {
     height: 100vh;
     position: relative;
     overflow: hidden;
-    max-width: 900px;
+    max-width: 760px;
     border: 10px solid black;
     background-color: #9699da;
 }
